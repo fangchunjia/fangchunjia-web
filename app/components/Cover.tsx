@@ -1,11 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import ToStartGraphic from "./graphics/ToStartGraphic";
 
 function CoverVideo({ onEnded }: { onEnded: () => void }) {
   useEffect(() => {
     // Safety net: dismiss even if autoplay is blocked or the file stalls.
-    const t = setTimeout(onEnded, 4000);
-    return () => clearTimeout(t);
+    // const t = setTimeout(onEnded, 4000);
+    // return () => clearTimeout(t);
   }, [onEnded]);
 
   return (
@@ -26,7 +27,7 @@ function CoverVideo({ onEnded }: { onEnded: () => void }) {
   );
 }
 
-export default function Cover() {
+export default function Cover({ onPlayed }: { onPlayed: () => void }) {
   const [show, setShow] = useState(true);
   const onEnded = () => {
     setShow(false);
@@ -36,12 +37,17 @@ export default function Cover() {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-9999"
+          className="fixed inset-0 z-9999 bg-[#e7e7e7]"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
         >
           <CoverVideo onEnded={onEnded} />
+          <div className="absolute inset-0 flex">
+            <div className="m-auto w-60 *:fill-[#5EFF00]">
+              <ToStartGraphic />
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

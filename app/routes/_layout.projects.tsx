@@ -1,22 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  Outlet,
-  useLocation,
-  useMatches,
-  useRouteLoaderData,
-} from "react-router";
+import { useEffect, useRef } from "react";
+import { Outlet, useMatches } from "react-router";
 import { useStore } from "@nanostores/react";
-import { AnimatePresence, motion, useMotionValue } from "motion/react";
-import { urlFor } from "~/lib/sanity";
-import Header from "~/components/Header";
-import ProjectTitle from "~/components/ProjectTitle";
-import Purikura from "~/components/Purikura";
-import Quote from "~/components/Quote";
+import { motion, useMotionValue } from "motion/react";
 import { $activeProject, $hoveredProject, $scrollY } from "~/stores/ui";
 import Screen from "~/components/Screen";
-import Back from "~/components/Back";
 
-export function ProjectsLayout() {
+export default function ProjectsLayout() {
   const matches = useMatches();
   const isDetailPage = matches.some(
     (match) => match.id === "routes/_layout.projects.$slug",
@@ -88,32 +77,11 @@ export function ProjectsLayout() {
           </motion.div>
         </motion.div>
       )}
-    </>
-  );
-}
-
-export default function Layout({ pathname }: { pathname: string }) {
-  const [isPurikuraVisible, setIsPurikuraVisible] = useState<boolean>(false);
-
-  const navItems = [
-    { title: "Home", to: "/", id: "home" },
-    { title: "About", to: "/about", id: "about" },
-    { title: "Projects", to: "/projects", id: "projects" },
-  ];
-
-  return (
-    <>
-      <Header
-        navItems={navItems}
-        pathname={pathname}
-        onClickBranding={() => setIsPurikuraVisible(!isPurikuraVisible)}
-      />
-      {isPurikuraVisible && <Purikura />}
-      <Quote />
-
-      <main className="w-full h-full">
+      <div
+        style={{ viewTransitionName: "projects-outlet" } as React.CSSProperties}
+      >
         <Outlet />
-      </main>
+      </div>
     </>
   );
 }

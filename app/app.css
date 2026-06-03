@@ -135,16 +135,16 @@ h2 {
 }
 
 /* Route content fades between pages */
-::view-transition-group(outlet) {
+::view-transition-group(projects-outlet) {
   animation: none;
   overflow: clip;
 }
 
-::view-transition-old(outlet) {
+::view-transition-old(projects-outlet) {
   animation: fade-out 0.4s ease-out both;
 }
 
-::view-transition-new(outlet) {
+::view-transition-new(projects-outlet) {
   opacity: 0;
 }
 

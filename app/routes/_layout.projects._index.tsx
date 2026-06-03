@@ -8,6 +8,14 @@ import { $activeProject, $hoveredProject } from "~/stores/ui";
 import { useEffect } from "react";
 import ReactLenis from "lenis/react";
 import type { Project } from "~/types/sanity.types";
+import { motion, type Variants } from "motion/react";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Chunjia Fang (Projects)" },
+    { name: "description", content: "Chunjia Fang's Site" },
+  ];
+}
 
 export type ProjectInfo = Pick<
   Project,
@@ -62,8 +70,21 @@ export default function Projects() {
     $hoveredProject.set(null);
   }, []);
 
+  const container: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+    },
+  };
+
   return (
-    <>
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      transition={{ duration: 0.4, delay: 0.4 }}
+      className="project-list relative"
+    >
       {/* Eager load cover images */}
       {projects?.map((p) =>
         p.cover.mediaType === "image" && p.cover.image?.asset?._ref ? (
@@ -75,15 +96,20 @@ export default function Projects() {
           />
         ) : null,
       )}
-      <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}>
-        <div className="p-4 pt-28">
-          <section className="">
-            <div className="pl-4">
-              <ProjectList projects={projects} />
-            </div>
-          </section>
-        </div>
-      </ReactLenis>
-    </>
+      <article>
+        <ReactLenis
+          root
+          options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
+        >
+          <div className="p-4 pt-28">
+            <section className="">
+              <div className="pl-4">
+                <ProjectList projects={projects} />
+              </div>
+            </section>
+          </div>
+        </ReactLenis>
+      </article>
+    </motion.div>
   );
 }

@@ -13,6 +13,13 @@ import type { Project } from "~/types/sanity.types";
 import applyAccentColor from "~/utils/applyAccentColor";
 import Back from "~/components/Back";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Chunjia Fang (Project)" },
+    { name: "description", content: "Chunjia Fang's Site" },
+  ];
+}
+
 export async function loader({ params }: Route.LoaderArgs) {
   const project = await client.fetch<Project>(
     groq`
@@ -98,7 +105,7 @@ export default function ProjectDetail() {
   const accentColor = project.accentColor?.hex;
 
   return (
-    <div>
+    <article>
       <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}>
         {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
         <motion.div
@@ -107,19 +114,7 @@ export default function ProjectDetail() {
           animate={{ height: "calc(100dvh - 32px)" }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
         >
-          <motion.div
-            className="grid grid-cols-3 absolute inset-0 p-4 gap-4"
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-              transition: {
-                delay: 1,
-                duration: 0.4,
-              },
-            }}
-          >
+          <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
             <div
               className="col-span-1 col-start-2 flex flex-col justify-end gap-4"
               style={{
@@ -128,30 +123,43 @@ export default function ProjectDetail() {
               }}
             >
               <motion.div
-                drag
-                dragMomentum={false}
-                className="flex flex-col gap-4"
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: 1,
+                  transition: {
+                    delay: 1,
+                    duration: 0.4,
+                  },
+                }}
               >
-                <div className="text-sm font-medium">
-                  <div className="mb-4">{project.subtitle}</div>
-                  <div className="leading-[16px]">
-                    <PortableText value={project.description} />
+                <motion.div
+                  drag
+                  dragMomentum={false}
+                  className="flex flex-col gap-4"
+                >
+                  <div className="text-sm font-medium">
+                    <div className="mb-4">{project.subtitle}</div>
+                    <div className="leading-[16px]">
+                      <PortableText value={project.description} />
+                    </div>
                   </div>
+                  <div className="text-xs font-medium">(scroll down)</div>
+                </motion.div>
+                <div className="fixed top-0 inset-x-auto">
+                  <Back />
                 </div>
-                <div className="text-xs font-medium">(scroll down)</div>
               </motion.div>
-              <div className="fixed top-0 inset-x-auto">
-                <Back />
-              </div>
             </div>
-          </motion.div>
+          </section>
         </motion.div>
 
         {/* Images section — follows cover in natural flow */}
-        <div className="p-8 px-32" style={{ backgroundColor: "#e7e7e7" }}>
+        <section className="p-8 px-32" style={{ backgroundColor: "#e7e7e7" }}>
           <MediaGrid grid={project.grid} />
-        </div>
+        </section>
       </ReactLenis>
-    </div>
+    </article>
   );
 }

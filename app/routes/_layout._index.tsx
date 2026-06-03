@@ -1,10 +1,10 @@
 import Breeze from "~/components/Breeze";
-import type { Route } from "./+types/_layout.home";
+import type { Route } from "./+types/_layout._index";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Chunjia Fang" },
+    { name: "description", content: "Chunjia Fang's Site" },
   ];
 }
 
