@@ -6,7 +6,7 @@ import groq from "groq";
 import MediaGrid from "~/components/MediaGrid";
 import ReactLenis, { useLenis } from "lenis/react";
 import { PortableText } from "@portabletext/react";
-import { $activeProject, $scrollY } from "~/stores/ui";
+import { $activeProject, $coverPlayed, $scrollY } from "~/stores/ui";
 import { motion } from "motion/react";
 import { useStore } from "@nanostores/react";
 import type { Project } from "~/types/sanity.types";
@@ -74,6 +74,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function ProjectDetail() {
   const { project } = useLoaderData<typeof loader>();
   const activeProject = useStore($activeProject);
+  const coverPlayed = useStore($coverPlayed);
 
   useEffect(() => {
     if (!activeProject) {
@@ -111,7 +112,11 @@ export default function ProjectDetail() {
         <motion.div
           className="w-full relative"
           initial={{ height: "100dvh" }}
-          animate={{ height: "calc(100dvh - 32px)" }}
+          animate={
+            coverPlayed
+              ? { height: "calc(100dvh - 32px)" }
+              : { height: "100dvh" }
+          }
           transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
         >
           <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
@@ -126,13 +131,17 @@ export default function ProjectDetail() {
                 initial={{
                   opacity: 0,
                 }}
-                animate={{
-                  opacity: 1,
-                  transition: {
-                    delay: 1,
-                    duration: 0.4,
-                  },
-                }}
+                animate={
+                  coverPlayed
+                    ? {
+                        opacity: 1,
+                        transition: {
+                          delay: 1,
+                          duration: 0.4,
+                        },
+                      }
+                    : { opacity: 0 }
+                }
               >
                 <motion.div
                   drag

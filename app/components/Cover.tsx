@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import ToStartGraphic from "./graphics/ToStartGraphic";
+import { $coverPlayed } from "~/stores/ui";
 
 function CoverVideo({ onEnded }: { onEnded: () => void }) {
   useEffect(() => {
@@ -27,10 +28,11 @@ function CoverVideo({ onEnded }: { onEnded: () => void }) {
   );
 }
 
-export default function Cover({ onPlayed }: { onPlayed: () => void }) {
+export default function Cover() {
   const [show, setShow] = useState(true);
   const onEnded = () => {
     setShow(false);
+    $coverPlayed.set(true);
   };
 
   return (

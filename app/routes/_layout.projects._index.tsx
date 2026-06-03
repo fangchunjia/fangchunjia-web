@@ -8,7 +8,7 @@ import { $activeProject, $hoveredProject } from "~/stores/ui";
 import { useEffect } from "react";
 import ReactLenis from "lenis/react";
 import type { Project } from "~/types/sanity.types";
-import { motion, type Variants } from "motion/react";
+import PageEntrance from "~/components/PageEntrance";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -70,21 +70,8 @@ export default function Projects() {
     $hoveredProject.set(null);
   }, []);
 
-  const container: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-    },
-  };
-
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      transition={{ duration: 0.4, delay: 0.4 }}
-      className="project-list relative"
-    >
+    <PageEntrance className="project-list relative">
       {/* Eager load cover images */}
       {projects?.map((p) =>
         p.cover.mediaType === "image" && p.cover.image?.asset?._ref ? (
@@ -110,6 +97,6 @@ export default function Projects() {
           </div>
         </ReactLenis>
       </article>
-    </motion.div>
+    </PageEntrance>
   );
 }
