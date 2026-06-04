@@ -5,11 +5,11 @@ import { urlFor } from "~/lib/sanity";
 
 function MediaWrapper({ media }: { media: any }) {
   // console.log(media);
+  console.log(media);
   return (
     <div
       style={{
-        gridColumn:
-          "span " + media.colSpanDesktop + " / span " + media.colSpanDesktop,
+        gridColumn: media.gridColumnStart + " / span " + media.gridColumnSpan,
       }}
     >
       {/* <MediaRenderer media={media} /> */}

@@ -1,14 +1,15 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import ToStartGraphic from "./graphics/ToStartGraphic";
 import { $coverPlayed } from "~/stores/ui";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
 
 function CoverVideo({ onEnded }: { onEnded: () => void }) {
-  useEffect(() => {
-    // Safety net: dismiss even if autoplay is blocked or the file stalls.
-    // const t = setTimeout(onEnded, 4000);
-    // return () => clearTimeout(t);
-  }, [onEnded]);
+  // useEffect(() => {
+  //   // Safety net: dismiss even if autoplay is blocked or the file stalls.
+  //   // const t = setTimeout(onEnded, 4000);
+  //   // return () => clearTimeout(t);
+  // }, [onEnded]);
 
   return (
     <video
@@ -29,29 +30,74 @@ function CoverVideo({ onEnded }: { onEnded: () => void }) {
 }
 
 export default function Cover() {
+  const container = useRef<HTMLDivElement | null>(null);
+  const entranceTl = useRef<GSAPTimeline | null>(null);
+  const exitTl = useRef<GSAPTimeline | null>(null);
+  const video = useRef<HTMLDivElement | null>(null);
+  const toStart = useRef<HTMLDivElement | null>(null);
+  const [end, setEnd] = useState(false);
   const [show, setShow] = useState(true);
+  const [complete, setComplete] = useState(false);
   const onEnded = () => {
-    setShow(false);
-    $coverPlayed.set(true);
+    setEnd(true);
   };
+  useGSAP(
+    () => {
+      entranceTl.current = gsap
+        .timeline()
+        .from(video.current, {
+          opacity: 0,
+          duration: 1.2,
+          delay: 0.4,
+        })
+        .from(
+          toStart.current,
+          {
+            opacity: 0,
+            pointerEvents: "none",
+          },
+          "+=4",
+        );
+    },
+    { scope: container },
+  );
+
+  useGSAP(() => {
+    exitTl.current = gsap
+      .timeline()
+      .to(toStart.current, { opacity: 0 })
+      .to(
+        video.current,
+        {
+          opacity: 0,
+          onComplete: () => {
+            if (end === true) {
+              setComplete(true);
+              $coverPlayed.set(true);
+            }
+          },
+        },
+        "<",
+      );
+  }, [end]);
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          className="fixed inset-0 z-9999 bg-[#e7e7e7]"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
-        >
+    !complete && (
+      <div className="fixed inset-0 flex bg-[#e7e7e7] z-9999" ref={container}>
+        <div className="m-auto w-160" ref={video}>
           <CoverVideo onEnded={onEnded} />
-          <div className="absolute inset-0 flex">
-            <div className="m-auto w-60 *:fill-[#5EFF00]">
+        </div>
+        <div className="absolute inset-0 flex" ref={toStart}>
+          <button
+            className="m-auto *:fill-[#5EFF00] w-160 h-90 flex cursor-pointer hover:*:fill-[#ffffff]"
+            onClick={onEnded}
+          >
+            <div className="w-60 m-auto">
               <ToStartGraphic />
             </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </button>
+        </div>
+      </div>
+    )
   );
 }

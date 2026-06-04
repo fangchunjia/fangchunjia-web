@@ -41,9 +41,10 @@ export async function loader({ params }: Route.LoaderArgs) {
       grid[] {
         _type,
         _key,
-        colSpanMobile,
-        colSpanTablet,
-        colSpanDesktop,
+        gridColumnStart,
+        gridColumnSpan,
+        gridRowStart,
+        gridRowSpan,
         _type == "imageGridBlock" => {
           image,
           caption,
