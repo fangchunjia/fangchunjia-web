@@ -1,15 +1,222 @@
-@import "tailwindcss" source(".");
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@font-face {
+  font-family: "ABC Otto";
+  src: url("/fonts/ABCOtto-Regular-Trial.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ABC Otto";
+  src: url("/fonts/ABCOtto-Medium-Trial.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ABC Otto";
+  src: url("/fonts/ABCOtto-RegularItalic-Trial.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "ABC Otto";
+  src: url("/fonts/ABCOtto-Bold-Trial.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "FZShengSKSJW";
+  src: url("/fonts/FZShengSKSJW_Zhun.TTF") format("truetype");
+  font-weight: normal;
+  unicode-range: U+4E00- U+9FFF;
+}
+
+@font-face {
+  font-family: "FZShengSKSJW";
+  src: url("/fonts/FZShengSKSJW_Zhong.TTF") format("truetype");
+  font-weight: 500;
+  unicode-range: U+4E00- U+9FFF;
+}
+
+:root {
+  --accent: #000;
+}
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-abc-otto-kai: "ABC Otto", "FZShengSKSJW", serif;
+  --color-accent: var(--accent);
+  --color-fangchunjia-pink: #ff008f;
+  --color-fangchunjia-green: #5eff00;
+  --color-fangchunjia-gray: #cdcdcd;
+  --color-fangchunjia-black: #000000;
+  --color-fangchunjia-translucent: #ffffff1a;
+  --color-fangchunjia-lightgray: #eeeeee;
+  --media-s-w-max: 160px;
+  --media-s-h-max: 160px;
+  --media-m-w-max: 160px;
+  --media-m-h-max: 160px;
+  --media-l-w-max: 160px;
+  --media-l-h-max: 160px;
+  --media-spacing: 40px;
+  --section-top-spacing: 112px;
+  --cursor-default: url("/cursors/cursor-02.png"), default;
+  --cursor-pointer: url("/cursors/cursor-01.png"), pointer;
+  --text-shadow-embossed: -1px -1px 0px #d8d8d866, 1px 1px 0px #949494ab;
+}
+
+@layer base {
+  ::selection {
+    @apply bg-fangchunjia-pink text-white;
+  }
+  * {
+    @apply font-abc-otto-kai;
+    font-feature-settings: "lnum" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* cursor: default; */
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply w-full h-dvh;
+  cursor: var(--cursor-default);
+  background-color: #e7e7e7;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+a,
+button,
+[role="button"],
+label,
+select {
+  cursor: var(--cursor-pointer);
+}
+
+h1 {
+  @apply leading-[22px];
+}
+
+h2 {
+  @apply font-semibold leading-[20px];
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Root contains only the Screen background — keep it static, no crossfade */
+::view-transition-old(root) {
+  animation: none;
+  display: none;
+}
+
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* Route content fades between pages. This is a named layer so it paints ABOVE
+   gallery-screen — the old content fades out to reveal the cover beneath it.
+   Because the element is tall and in-flow, its frozen old snapshot would
+   otherwise snap to the top when scroll resets on navigation; --vt-scroll-y
+   (captured at click time) offsets it back to the scrolled position so the
+   exit is a pure fade with no slide. */
+::view-transition-group(projects-outlet) {
+  animation: none;
+}
+
+::view-transition-old(projects-outlet) {
+  animation: fade-out 0.4s ease-out both;
+  transform-origin: top left;
+  translate: 0 calc(var(--vt-scroll-y, 0px) * -1);
+}
+
+::view-transition-new(projects-outlet) {
+  opacity: 0;
+}
+
+/* Screen background — persistent, no animation, old hidden to avoid double-rendering */
+::view-transition-group(gallery-screen),
+::view-transition-old(gallery-screen),
+::view-transition-new(gallery-screen) {
+  animation: none;
+}
+
+::view-transition-old(gallery-screen) {
+  display: none;
+}
+
+/* Persistent layout elements: own layers, no animation, old hidden to avoid double-rendering */
+::view-transition-group(site-header),
+::view-transition-old(site-header),
+::view-transition-new(site-header),
+::view-transition-group(site-quote),
+::view-transition-old(site-quote),
+::view-transition-new(site-quote),
+::view-transition-group(project-title),
+::view-transition-old(project-title),
+::view-transition-new(project-title) {
+  animation: none;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(site-quote),
+::view-transition-old(project-title) {
+  display: none;
+}
+
+.x {
+  background: #e8e9ed;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 1;
+  position: relative;
+  font-size: 12.5rem;
+  text-shadow: calc(-2px * 1) calc(-2px * 1) calc(4px * 1) #fffdfc;
+}
+
+.y {
+  background: #111;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 1;
+  position: relative;
+  text-shadow: -0.01em -0.01em 0.01em #000;
+}
+
+.embossed-wrapper {
+  mix-blend-mode: difference;
+  .embossed {
+    background: #444;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 1;
+    position: relative;
+    text-shadow: -0.02em -0.02em 0.02em #000;
   }
 }
