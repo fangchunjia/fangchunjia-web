@@ -134,14 +134,20 @@ h2 {
   animation: none;
 }
 
-/* Route content fades between pages */
+/* Route content fades between pages. This is a named layer so it paints ABOVE
+   gallery-screen — the old content fades out to reveal the cover beneath it.
+   Because the element is tall and in-flow, its frozen old snapshot would
+   otherwise snap to the top when scroll resets on navigation; --vt-scroll-y
+   (captured at click time) offsets it back to the scrolled position so the
+   exit is a pure fade with no slide. */
 ::view-transition-group(projects-outlet) {
   animation: none;
-  overflow: clip;
 }
 
 ::view-transition-old(projects-outlet) {
   animation: fade-out 0.4s ease-out both;
+  transform-origin: top left;
+  translate: 0 calc(var(--vt-scroll-y, 0px) * -1);
 }
 
 ::view-transition-new(projects-outlet) {
