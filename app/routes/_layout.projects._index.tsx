@@ -88,7 +88,7 @@ export default function Projects() {
           root
           options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
         >
-          <div className="col-start-3 col-span-4">
+          <div className="col-start-1 col-span-4">
             <section className="bg-[#e7e7e7]">
               <ProjectList projects={projects} />
             </section>

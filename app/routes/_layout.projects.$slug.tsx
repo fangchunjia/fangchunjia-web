@@ -162,9 +162,9 @@ export default function ProjectDetail() {
 
                   <div className="text-xs font-medium">(scroll down)</div>
                 </motion.div>
-                <div className="fixed top-0 inset-x-auto z-400">
+                {/* <div className="fixed top-0 inset-x-auto z-400">
                   <Back />
-                </div>
+                </div> */}
               </motion.div>
             </div>
           </section>

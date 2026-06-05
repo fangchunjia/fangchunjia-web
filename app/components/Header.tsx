@@ -20,18 +20,17 @@ export default function Header({
 }) {
   return (
     <div
-      className="fixed z-300 grid grid-cols-12 gap-4 px-4 inset-x-0 h-28 bg-gradient-to-b from-[#ffffff66] to-[#ffffff00]"
+      className="fixed z-300 flex inset-x-0 h-28 bg-gradient-to-b from-[#ffffff66] to-[#ffffff00]"
       style={{ viewTransitionName: "site-header" }}
     >
       <div
-        className="col-start-1 col-span-2"
         onClick={() => {
           onClickBranding();
         }}
       >
         <Branding />
       </div>
-      <div className="col-start-3 col-span-10">
+      <div>
         <Nav items={navItems} pathname={pathname} />
       </div>
     </div>
