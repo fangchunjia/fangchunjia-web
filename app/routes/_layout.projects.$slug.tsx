@@ -121,13 +121,7 @@ export default function ProjectDetail() {
           transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
         >
           <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
-            <div
-              className="col-span-1 col-start-2 flex flex-col justify-end gap-4"
-              style={{
-                color: project.accentColor?.hex,
-                textShadow: `0 0 1px ${project.accentColor?.hex}80`,
-              }}
-            >
+            <div className="col-span-1 col-start-2 flex flex-col justify-end gap-4 text-accent">
               <motion.div
                 initial={{
                   opacity: 0,
@@ -166,7 +160,7 @@ export default function ProjectDetail() {
         </motion.div>
 
         {/* Images section — follows cover in natural flow */}
-        <section className="p-8 px-32" style={{ backgroundColor: "#e7e7e7" }}>
+        <section className="py-8 px-4" style={{ backgroundColor: "#e7e7e7" }}>
           <MediaGrid grid={project.grid} />
         </section>
       </ReactLenis>

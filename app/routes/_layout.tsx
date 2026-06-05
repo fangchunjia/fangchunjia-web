@@ -62,11 +62,7 @@ export function ProjectsLayout() {
       >
         <Screen item={displayItem} />
       </motion.div>
-      {/* {onScreenProject && (
-        <div className="">
-          <ProjectTitle project={onScreenProject} />
-        </div>
-      )} */}
+
       {onScreenProject && (
         <motion.div
           initial={{ filter: "blur(2px)" }}
@@ -80,9 +76,8 @@ export function ProjectsLayout() {
             x: cursorX,
             y: cursorY,
             viewTransitionName: "project-title",
-            color: onScreenProject.accentColor.hex,
           }}
-          className="font-medium text-lg mb-0 py-0 fixed z-1000"
+          className="font-medium text-lg mb-0 py-0 fixed z-1000 text-accent"
         >
           <motion.div className="pointer-events-none top-full left-full">
             <h1>{onScreenProject.title}</h1>

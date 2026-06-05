@@ -55,9 +55,8 @@ export default function ProjectTitle({ project }: { project: ProjectInfo }) {
         zIndex: 5000,
         pointerEvents: "none",
         viewTransitionName: "project-title",
-        color: project.accentColor.hex,
       }}
-      className="font-medium text-2xl mb-0 py-0 blur-[2px]"
+      className="font-medium text-2xl mb-0 py-0 blur-[2px] text-accent"
     >
       <motion.div>
         <h1>{project.title}</h1>

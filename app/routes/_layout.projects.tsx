@@ -42,7 +42,7 @@ export default function ProjectsLayout() {
     <>
       <motion.div
         ref={galleryWrapperRef}
-        className="fixed top-0 left-0 right-0 overflow-hidden project-image"
+        className="fixed inset-0 overflow-hidden project-image"
         style={{ viewTransitionName: "gallery-screen" } as React.CSSProperties}
         initial={{
           height: "100dvh",
@@ -68,9 +68,8 @@ export default function ProjectsLayout() {
             x: cursorX,
             y: cursorY,
             viewTransitionName: "project-title",
-            color: onScreenProject.accentColor.hex,
           }}
-          className="font-medium text-lg mb-0 py-0 fixed z-1000"
+          className="font-medium text-lg mb-0 py-0 fixed z-1000 text-accent"
         >
           <motion.div className="pointer-events-none top-full left-full">
             <h1>{onScreenProject.title}</h1>
