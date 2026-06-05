@@ -83,16 +83,14 @@ export default function Projects() {
           />
         ) : null,
       )}
-      <article>
+      <article className="grid grid-cols-12 p-4 pt-28 gap-4">
         <ReactLenis
           root
           options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
         >
-          <div className="p-4 pt-28">
-            <section className="">
-              <div className="pl-4">
-                <ProjectList projects={projects} />
-              </div>
+          <div className="col-start-3 col-span-4">
+            <section className="bg-[#e7e7e7]">
+              <ProjectList projects={projects} />
             </section>
           </div>
         </ReactLenis>

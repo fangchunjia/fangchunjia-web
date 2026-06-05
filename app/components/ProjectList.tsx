@@ -56,16 +56,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                 }}
                 className="flex gap-2 font-medium mb-0 py-0 text-md"
               >
-                <div
-                  className="w-fit opacity-60 group-hover:opacity-100 text-accent"
-                  style={{
-                    opacity:
-                      hoveredProject === null ||
-                      p.slug.current === hoveredProject?.slug?.current
-                        ? "1"
-                        : "0.6",
-                  }}
-                >
+                <div className="w-fit text-accent">
                   <span className="block px-1 -ml-1 leading-[22px] ">
                     {p.title}
                   </span>

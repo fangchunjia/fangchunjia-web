@@ -60,6 +60,8 @@ export default function ProjectsLayout() {
           initial={{ filter: "blur(2px)" }}
           animate={{
             filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            opacity: isDetailPage ? 1 : 0.8,
+            backgroundColor: isDetailPage ? "#e7e7e7" : "none",
             transition: { duration: 1 },
           }}
           style={{
@@ -68,7 +70,7 @@ export default function ProjectsLayout() {
             x: cursorX,
             y: cursorY,
             viewTransitionName: "project-title",
-            color: onScreenProject.accentColor.hex,
+            // color: onScreenProject.accentColor.hex,
           }}
           className="font-medium text-lg mb-0 py-0 fixed z-1000"
         >

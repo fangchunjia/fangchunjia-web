@@ -113,20 +113,20 @@ export default function ProjectDetail() {
         <motion.div
           className="w-full relative"
           initial={{ height: "100dvh" }}
-          animate={
-            coverPlayed
-              ? { height: "calc(100dvh - 32px)" }
-              : { height: "100dvh" }
-          }
+          // animate={
+          //   coverPlayed
+          //     ? { height: "calc(100dvh - 32px)" }
+          //     : { height: "100dvh" }
+          // }
           transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
         >
           <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
             <div
               className="col-span-1 col-start-2 flex flex-col justify-end gap-4"
-              style={{
-                color: project.accentColor?.hex,
-                textShadow: `0 0 1px ${project.accentColor?.hex}80`,
-              }}
+              // style={{
+              //   color: project.accentColor?.hex,
+              //   textShadow: `0 0 1px ${project.accentColor?.hex}80`,
+              // }}
             >
               <motion.div
                 initial={{
@@ -137,7 +137,7 @@ export default function ProjectDetail() {
                     ? {
                         opacity: 1,
                         transition: {
-                          delay: 1,
+                          delay: 0.8,
                           duration: 0.4,
                         },
                       }
@@ -147,17 +147,22 @@ export default function ProjectDetail() {
                 <motion.div
                   drag
                   dragMomentum={false}
-                  className="flex flex-col gap-4"
+                  className="flex flex-col gap-4 bg-[#e7e7e7]"
                 >
-                  <div className="text-sm font-medium">
-                    <div className="mb-4">{project.subtitle}</div>
-                    <div className="leading-[16px]">
+                  {project.subtitle && (
+                    <div className="text-sm font-medium">
+                      {project.subtitle}
+                    </div>
+                  )}
+                  {project.description && (
+                    <div className="leading-[16px] text-sm font-medium">
                       <PortableText value={project.description} />
                     </div>
-                  </div>
+                  )}
+
                   <div className="text-xs font-medium">(scroll down)</div>
                 </motion.div>
-                <div className="fixed top-0 inset-x-auto">
+                <div className="fixed top-0 inset-x-auto z-400">
                   <Back />
                 </div>
               </motion.div>
@@ -166,7 +171,7 @@ export default function ProjectDetail() {
         </motion.div>
 
         {/* Images section — follows cover in natural flow */}
-        <section className="p-8 px-32" style={{ backgroundColor: "#e7e7e7" }}>
+        <section className="p-8 px-32 bg-[#e7e7e7]">
           <MediaGrid grid={project.grid} />
         </section>
       </ReactLenis>

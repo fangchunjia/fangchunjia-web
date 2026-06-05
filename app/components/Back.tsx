@@ -9,8 +9,8 @@ export default function Back({ color }: { color?: string }) {
       relative="path"
       viewTransition
       onClick={recordTransitionScroll}
-      className="cursor-pointer transition text-sm font-medium"
-      style={{ color: color }}
+      className="cursor-pointer transition text-sm font-medium bg-[#e7e7e7]"
+      // style={{ color: color }}
     >
       (back)
     </Link>
