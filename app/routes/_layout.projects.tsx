@@ -38,6 +38,21 @@ export default function ProjectsLayout() {
     ? { slug: onScreenProject.slug, cover: onScreenProject.cover }
     : null;
 
+  // Scrolling of Gallery on /projects/$slug and restoring on /projects
+  useEffect(() => {
+    if (!isDetailPage) {
+      if (galleryWrapperRef.current)
+        galleryWrapperRef.current.style.transform = "";
+      $scrollY.set(0);
+      return;
+    }
+    return $scrollY.listen((y) => {
+      if (!galleryWrapperRef.current) return;
+      const maxTranslate = window.innerHeight - 32;
+      galleryWrapperRef.current.style.transform = `translateY(-${Math.min(y, maxTranslate)}px)`;
+    });
+  }, [isDetailPage]);
+
   return (
     <>
       <motion.div
@@ -48,7 +63,7 @@ export default function ProjectsLayout() {
           height: "100dvh",
         }}
       >
-        <Screen item={displayItem} />
+        <Screen item={displayItem} isDetailPage={isDetailPage} />
       </motion.div>
       {/* {onScreenProject && (
         <div className="">
@@ -60,6 +75,8 @@ export default function ProjectsLayout() {
           initial={{ filter: "blur(2px)" }}
           animate={{
             filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            opacity: isDetailPage ? 1 : 0.8,
+            backgroundColor: isDetailPage ? "#e7e7e7" : "none",
             transition: { duration: 1 },
           }}
           style={{

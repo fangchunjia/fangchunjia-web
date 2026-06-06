@@ -113,16 +113,17 @@ export default function ProjectDetail() {
         <motion.div
           className="w-full relative"
           initial={{ height: "100dvh" }}
-          animate={
-            coverPlayed
-              ? { height: "calc(100dvh - 32px)" }
-              : { height: "100dvh" }
-          }
+          // animate={
+          //   coverPlayed
+          //     ? { height: "calc(100dvh - 32px)" }
+          //     : { height: "100dvh" }
+          // }
           transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
         >
           <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
             <div className="col-span-1 col-start-2 flex flex-col justify-end gap-4 text-accent">
               <motion.div
+                className="flex flex-col gap-2 bg-[#e7e7e7] p-2"
                 initial={{
                   opacity: 0,
                 }}
@@ -141,16 +142,23 @@ export default function ProjectDetail() {
                 <motion.div
                   drag
                   dragMomentum={false}
-                  className="flex flex-col gap-4"
+                  className="flex flex-col gap-2"
                 >
                   <div className="text-sm font-medium">
-                    <div className="mb-4">{project.subtitle}</div>
-                    <div className="leading-[16px]">
-                      <PortableText value={project.description} />
-                    </div>
+                    {project.subtitle && (
+                      <div className="mb-2">{project.subtitle}</div>
+                    )}
+                    {project.description && (
+                      <div className="leading-[16px]">
+                        <PortableText value={project.description} />
+                      </div>
+                    )}
                   </div>
-                  <div className="text-xs font-medium">(scroll down)</div>
                 </motion.div>
+                {project.grid?.length && (
+                  <div className="text-xs font-medium">(scroll down)</div>
+                )}
+
                 <div className="fixed top-0 inset-x-auto">
                   <Back />
                 </div>
@@ -158,11 +166,12 @@ export default function ProjectDetail() {
             </div>
           </section>
         </motion.div>
-
         {/* Images section — follows cover in natural flow */}
-        <section className="py-8 px-4" style={{ backgroundColor: "#e7e7e7" }}>
-          <MediaGrid grid={project.grid} />
-        </section>
+        {project.grid?.length && (
+          <section className="py-8 px-4" style={{ backgroundColor: "#e7e7e7" }}>
+            <MediaGrid grid={project.grid} />
+          </section>
+        )}
       </ReactLenis>
     </article>
   );

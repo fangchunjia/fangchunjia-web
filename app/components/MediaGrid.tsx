@@ -22,7 +22,7 @@ export default function MediaGrid({ grid }: { grid: any[] }) {
   return (
     <div className="grid grid-cols-12 gap-4">
       {grid &&
-        grid.map((m) => <MediaWrapper media={m} key={m.image.asset._ref} />)}
+        grid.map((m) => <MediaWrapper media={m} key={m.image?.asset._ref} />)}
       {/* {combineMedia(media, mediaLayout).map((m) => (
         <MediaWrapper media={m} key={m.key} />
       ))} */}
