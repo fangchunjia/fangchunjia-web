@@ -15,6 +15,7 @@ import Quote from "~/components/Quote";
 import { $activeProject, $hoveredProject, $scrollY } from "~/stores/ui";
 import Screen from "~/components/Screen";
 import Back from "~/components/Back";
+import ProgressBar from "~/components/ProgressBar";
 
 export function ProjectsLayout() {
   const matches = useMatches();
@@ -114,6 +115,7 @@ export default function Layout({ pathname }: { pathname: string }) {
       <main className="w-full h-full">
         <Outlet />
       </main>
+      <ProgressBar />
     </>
   );
 }
