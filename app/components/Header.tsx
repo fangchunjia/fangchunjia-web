@@ -1,23 +1,10 @@
-import { AnimatePresence, motion } from "motion/react";
 import Branding from "./Branding";
 import Nav from "./Nav";
-import { useLocation } from "react-router";
-import SimpleNav from "./SimpleNav";
-
-export interface NavItem {
-  title: string;
-  id: string;
-  to: string;
-}
 
 export default function Header({
-  navItems,
   onClickBranding,
-  pathname,
 }: {
-  navItems: NavItem[];
   onClickBranding: Function;
-  pathname: string;
 }) {
   return (
     <div
@@ -31,8 +18,7 @@ export default function Header({
       >
         <Branding />
       </div>
-      <SimpleNav />
-      {/* <Nav items={navItems} pathname={pathname} /> */}
+      <Nav />
     </div>
   );
 }

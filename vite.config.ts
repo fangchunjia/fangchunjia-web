@@ -9,7 +9,14 @@ export default defineConfig({
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
     reactRouter(),
-    svgr(),
+    svgr({
+      svgrOptions: {
+        svgo: true,
+        svgoConfig: {
+          plugins: [{ name: "removeAttrs", params: { attrs: "fill" } }],
+        },
+      },
+    }),
   ],
   resolve: {
     tsconfigPaths: true,
