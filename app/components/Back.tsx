@@ -12,7 +12,7 @@ export default function Back({ color }: { color?: string }) {
       className="cursor-pointer transition text-sm font-medium"
       style={{ color: color }}
     >
-      (back)
+      (Back)
     </Link>
   );
 }

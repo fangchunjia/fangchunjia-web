@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import ToStartGraphic from "./graphics/ToStartGraphic";
+import ToStartGraphic from "~/assets/graphics/start.svg?react";
 import { $coverPlayed } from "~/stores/ui";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";

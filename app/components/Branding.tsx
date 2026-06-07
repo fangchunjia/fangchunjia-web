@@ -1,4 +1,4 @@
-import FangchunjiaGraphic from "./graphics/FangchunjiaGraphic";
+import FangchunjiaGraphic from "~/assets/graphics/fangchunjia.svg?react";
 
 export default function Branding() {
   return (
