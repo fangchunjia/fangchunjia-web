@@ -123,7 +123,7 @@ export default function ProjectDetail() {
           <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
             <div className="col-span-1 col-start-2 flex flex-col justify-end gap-4 text-accent">
               <motion.div
-                className="flex flex-col gap-2 bg-[#e7e7e7] p-2"
+                className="flex flex-col gap-2 p-2"
                 initial={{
                   opacity: 0,
                 }}
