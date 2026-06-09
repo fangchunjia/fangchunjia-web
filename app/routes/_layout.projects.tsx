@@ -76,7 +76,9 @@ export default function ProjectsLayout() {
           animate={{
             filter: isDetailPage ? "blur(0px)" : "blur(2px)",
             opacity: isDetailPage ? 1 : 0.8,
-            backgroundColor: isDetailPage ? "#e7e7e7" : "none",
+            backgroundColor: isDetailPage
+              ? "var(--color-fangchunjia-gray)"
+              : "none",
             transition: { duration: 1 },
           }}
           style={{

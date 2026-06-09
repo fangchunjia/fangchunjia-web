@@ -13,18 +13,23 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { title: "Home", to: "/", Graphic: HomeGraphic, graphicClassName: "pl-3" },
+  {
+    title: "Home",
+    to: "/",
+    Graphic: HomeGraphic,
+    graphicClassName: "pl-3 *:fill-fangchunjia-black",
+  },
   {
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
-    graphicClassName: "pl-2 pt-1",
+    graphicClassName: "pl-2 pt-1 *:fill-fangchunjia-black",
   },
   {
     title: "Projects",
     to: "/projects",
     Graphic: ProjectsGraphic,
-    graphicClassName: "pl-2 pt-1",
+    graphicClassName: "pl-2 pt-1 *:fill-fangchunjia-black",
   },
 ];
 
@@ -34,6 +39,11 @@ function NavItem({ item, distance }: { item: NavItem; distance: number }) {
   return (
     <motion.div
       className="relative shrink-0 flex flex-col items-start overflow-hidden h-full w-32"
+      initial={{
+        // Start with the max blur and transparency (opacity)
+        filter: `blur(${navItems.length - 1}px)`,
+        opacity: 0.8,
+      }}
       animate={{
         filter: `blur(${distance}px)`,
         opacity: distance === 0 ? 1 : 0.8,

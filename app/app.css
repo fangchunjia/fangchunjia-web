@@ -52,10 +52,8 @@
   --color-accent: var(--accent);
   --color-fangchunjia-pink: #ff008f;
   --color-fangchunjia-green: #5eff00;
-  --color-fangchunjia-gray: #cdcdcd;
+  --color-fangchunjia-gray: #e7e7e7;
   --color-fangchunjia-black: #000000;
-  --color-fangchunjia-translucent: #ffffff1a;
-  --color-fangchunjia-lightgray: #eeeeee;
   --media-s-w-max: 160px;
   --media-s-h-max: 160px;
   --media-m-w-max: 160px;
@@ -91,9 +89,8 @@
 
 html,
 body {
-  @apply w-full h-dvh;
+  @apply w-full h-dvh bg-fangchunjia-gray;
   cursor: var(--cursor-default);
-  background-color: #e7e7e7;
 }
 
 a,
@@ -102,6 +99,12 @@ button,
 label,
 select {
   cursor: var(--cursor-pointer);
+}
+
+svg {
+  * {
+    fill: inherit;
+  }
 }
 
 h1 {

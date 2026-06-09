@@ -32,7 +32,7 @@ export type ProjectInfo = Pick<
 
 export async function loader({}: Route.LoaderArgs) {
   const raw = await client.fetch<any[]>(groq`
-    *[_type == "project"] | order(year desc) {
+    *[_type == "project"] | order(orderRank) {
       _id,
       title,
       subtitle,

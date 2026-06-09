@@ -159,7 +159,7 @@ export default function ProjectDetail() {
                   <div className="text-xs font-medium">(scroll down)</div>
                 )}
 
-                <div className="fixed top-0 inset-x-auto">
+                <div className="fixed top-0 right-0">
                   <Back />
                 </div>
               </motion.div>
@@ -168,7 +168,7 @@ export default function ProjectDetail() {
         </motion.div>
         {/* Images section — follows cover in natural flow */}
         {project.grid?.length && (
-          <section className="py-8 px-4" style={{ backgroundColor: "#e7e7e7" }}>
+          <section className="py-8 px-4 bg-fangchunjia-gray">
             <MediaGrid grid={project.grid} />
           </section>
         )}
