@@ -18,6 +18,15 @@ export default function ProjectsLayout() {
   const cursorY = useMotionValue(0);
   const isFollowingRef = useRef(true);
 
+  // This layout owns the on-screen project display for the whole projects
+  // section; reset to neutral when the section unmounts (leaving to Home/About).
+  useEffect(() => {
+    return () => {
+      $activeProject.set(null);
+      $hoveredProject.set(null);
+    };
+  }, []);
+
   useEffect(() => {
     isFollowingRef.current = !isDetailPage;
   }, [isDetailPage]);

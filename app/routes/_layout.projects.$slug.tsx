@@ -92,6 +92,9 @@ export default function ProjectDetail() {
       });
     }
     applyAccentColor(project.accentColor.hex as string);
+    return () => {
+      applyAccentColor(null);
+    };
   }, []);
 
   const lenis = useLenis(({ scroll }) => {
