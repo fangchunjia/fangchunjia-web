@@ -1,5 +1,5 @@
 import { useLoaderData, data } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
 import groq from "groq";
@@ -11,6 +11,7 @@ import { motion } from "motion/react";
 import { useStore } from "@nanostores/react";
 import type { Project } from "~/types/sanity.types";
 import applyAccentColor from "~/utils/applyAccentColor";
+import { useLenisAutoResize } from "~/utils/useLenisAutoResize";
 import Back from "~/components/Back";
 
 export function meta({}: Route.MetaArgs) {
@@ -101,6 +102,9 @@ export default function ProjectDetail() {
     $scrollY.set(scroll);
   });
 
+  const contentRef = useRef<HTMLElement>(null);
+  useLenisAutoResize(contentRef);
+
   useEffect(() => {
     return () => {
       lenis?.scrollTo(0, { immediate: true });
@@ -110,7 +114,7 @@ export default function ProjectDetail() {
   const accentColor = project.accentColor?.hex;
 
   return (
-    <article>
+    <article ref={contentRef}>
       <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}>
         {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
         <motion.div

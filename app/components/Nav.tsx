@@ -17,19 +17,19 @@ const navItems: NavItem[] = [
     title: "Home",
     to: "/",
     Graphic: HomeGraphic,
-    graphicClassName: "pl-3 *:fill-fangchunjia-black",
+    graphicClassName: "pl-3 *:fill-accent",
   },
   {
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
-    graphicClassName: "pl-2 pt-1 *:fill-fangchunjia-black",
+    graphicClassName: "pl-2 pt-1 *:fill-accent",
   },
   {
     title: "Projects",
     to: "/projects",
     Graphic: ProjectsGraphic,
-    graphicClassName: "pl-2 pt-1 *:fill-fangchunjia-black",
+    graphicClassName: "pl-2 pt-1 *:fill-accent",
   },
 ];
 

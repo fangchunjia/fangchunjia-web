@@ -111,6 +111,7 @@ export type Project = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  orderRank?: string;
   title: string;
   subtitle?: string;
   year: number;
@@ -122,6 +123,7 @@ export type Project = {
   >;
   externalLink?: string;
   cover: {
+    fullscreen?: boolean;
     mediaType: "image" | "video";
     image?: {
       asset?: SanityImageAssetReference;

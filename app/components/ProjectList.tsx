@@ -57,7 +57,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                 className="flex gap-2 font-medium mb-0 py-0 text-md"
               >
                 <div
-                  className="w-fit opacity-60 group-hover:opacity-100 transition"
+                  className="w-fit opacity-60 group-hover:opacity-100 transition text-accent"
                   style={{
                     opacity:
                       hoveredProject === null ||

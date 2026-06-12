@@ -1,5 +1,5 @@
 import { AnimatePresence, aspectRatio, motion } from "motion/react";
-import { urlFor } from "~/lib/sanity";
+import { coverImageUrl } from "~/lib/sanity";
 import MuxPlayer from "@mux/mux-player-react";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
 
@@ -10,33 +10,60 @@ export default function Screen({
   item: Pick<ProjectInfo, "slug" | "cover"> | null;
   isDetailPage: boolean;
 }) {
-  console.log(item);
-  console.log(item?.cover.video?.asset?.aspectRatio?.replace(":", "/"));
+  // console.log(item);
+  // console.log(item?.cover.video?.asset?.aspectRatio?.replace(":", "/"));
   return (
-    <div className="w-full h-full pointer-events-none relative grid grid-cols-12 gap-4 p-4 pt-28">
+    <div className="w-full h-full pointer-events-none relative grid grid-cols-12 gap-4">
       <AnimatePresence>
-        {item?.cover.mediaType === "image" && item.cover.image?.asset?._ref && (
-          <motion.div
-            className="col-start-4 col-span-6 *:w-full *:aspect-4/3"
-            animate={{
-              scale: isDetailPage ? 1.06 : 1,
-              transition: {
-                duration: 0.4,
-                delay: 0.1,
-              },
-            }}
-          >
-            <motion.img
-              key={item.slug.current}
-              src={urlFor(item.cover.image.asset._ref).url()}
-              className="object-contain"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            />
-          </motion.div>
-        )}
+        {item?.cover.mediaType === "image" &&
+          item.cover.image?.asset?._ref &&
+          (item.cover.fullscreen ? (
+            <motion.div
+              className="col-start-1 col-span-12 *:w-full"
+              animate={{
+                scale: isDetailPage ? 1.06 : 1,
+                transition: {
+                  duration: 0.4,
+                  delay: 0.1,
+                },
+              }}
+            >
+              <motion.img
+                key={item.slug.current}
+                src={coverImageUrl(item.cover.image.asset._ref)}
+                className="object-contain"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              className="col-start-4 col-span-6 *:w-full *:aspect-4/3 m-auto"
+              animate={{
+                scale: isDetailPage ? 1.06 : 1,
+                transition: {
+                  duration: 0.2,
+                  delay: 0.1,
+                  ease: "linear",
+                  // type: "spring",
+                  // stiffness: 400,
+                  // damping: 25,
+                },
+              }}
+            >
+              <motion.img
+                key={item.slug.current}
+                src={coverImageUrl(item.cover.image.asset._ref)}
+                className="object-contain"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              />
+            </motion.div>
+          ))}
         {item?.cover.mediaType === "video" &&
           item.cover.video?.asset?.playbackId !== undefined && (
             <motion.div

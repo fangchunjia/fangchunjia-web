@@ -8,7 +8,7 @@ export default function Header({
 }) {
   return (
     <div
-      className="fixed z-300 flex"
+      className="fixed z-300 flex inset-x-0 h-28"
       style={{ viewTransitionName: "site-header" }}
     >
       <div

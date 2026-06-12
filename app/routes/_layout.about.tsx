@@ -32,7 +32,7 @@ export async function loader() {
 export default function About() {
   const { about } = useLoaderData<typeof loader>();
   return (
-    <PageEntrance className="p-4 pt-28 w-full h-full">
+    <PageEntrance className="p-4 pt-28 w-full">
       <article className="w-138 pl-4">
         <div className="[--tw-prose-body:#000000] prose prose-p:font-medium prose-p:leading-[20px] prose-p:m-0 prose-p:empty:h-[20px] prose-a:font-medium prose-a:no-underline prose-a:text-fangchunjia-pink">
           <PortableText value={about.body} />

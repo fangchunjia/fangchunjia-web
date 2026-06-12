@@ -89,7 +89,7 @@
 
 html,
 body {
-  @apply w-full h-dvh bg-fangchunjia-gray;
+  @apply w-full min-h-dvh bg-fangchunjia-gray;
   cursor: var(--cursor-default);
 }
 

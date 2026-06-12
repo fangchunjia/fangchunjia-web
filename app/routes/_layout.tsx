@@ -16,7 +16,7 @@ export default function Layout() {
       {isPurikuraVisible && <Purikura />}
       <Quote />
 
-      <main className="w-full h-full">
+      <main className="w-full min-h-dvh flex flex-col">
         <Outlet />
       </main>
       <ProgressBar />
