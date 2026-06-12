@@ -9,6 +9,7 @@ type NavItem = {
   title: string;
   to: string;
   Graphic: ComponentType;
+  parentClassName: string;
   graphicClassName: string;
 };
 
@@ -17,19 +18,22 @@ const navItems: NavItem[] = [
     title: "Home",
     to: "/",
     Graphic: HomeGraphic,
-    graphicClassName: "pl-3 *:fill-accent",
+    parentClassName: "pl-3",
+    graphicClassName: "*:fill-accent",
   },
   {
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
-    graphicClassName: "pl-2 pt-1 *:fill-accent",
+    parentClassName: "pl-2 pt-1",
+    graphicClassName: "*:fill-accent",
   },
   {
     title: "Projects",
     to: "/projects",
     Graphic: ProjectsGraphic,
-    graphicClassName: "pl-2 pt-1 *:fill-accent",
+    parentClassName: "pl-2 pt-1",
+    graphicClassName: "*:fill-accent",
   },
 ];
 
@@ -50,14 +54,16 @@ function NavItem({ item, distance }: { item: NavItem; distance: number }) {
       }}
       transition={{ duration: 0.4 }}
     >
-      <NavLink
-        to={item.to}
-        className="block w-fit *:w-full *:transition *:fill-accent *:overflow-visible h-10"
-      >
-        <div className={`w-full ${item.graphicClassName}`}>
-          <Graphic />
-        </div>
-      </NavLink>
+      <div className={`${item.parentClassName}`}>
+        <NavLink
+          to={item.to}
+          className="block w-fit *:w-full *:transition *:fill-accent *:overflow-visible h-fit"
+        >
+          <div className={`w-full ${item.graphicClassName}`}>
+            <Graphic />
+          </div>
+        </NavLink>
+      </div>
     </motion.div>
   );
 }
