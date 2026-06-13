@@ -1,52 +1,47 @@
-import { urlFor } from "~/lib/sanity";
+import MuxPlayer from "@mux/mux-player-react";
+import { coverImageUrl } from "~/lib/sanity";
+import type { ProjectInfo } from "~/routes/_layout.projects._index";
 
-export default function MediaRenderer({ media }: { media: Media }) {
+export default function MediaRenderer({
+  media,
+  objectFit = "contain",
+}: {
+  media: ProjectInfo["cover"] | undefined;
+  objectFit?: "fit" | "contain" | "cover";
+}) {
   return (
-    <>
-      {media.contentType?.startsWith("image") ? (
+    <div className="flex w-full h-full">
+      {media?.mediaType === "image" && media.image?.asset?._ref && (
         <img
-          className="w-full h-full object-cover"
-          title={media.key}
-          src={urlFor(
-            "image-71c7dc1e6f0ceadd5d2dd9fb1e641a894566f026-1654x2339-jpg",
-          )
-            .width(800)
-            .height(600)
-            .url()}
-          // src={`https://files.fangchunjia.com/${media.key}`}
+          src={coverImageUrl(media.image.asset._ref)}
+          className={`w-full h-full object-center object-${objectFit}`}
         />
-      ) : media.contentType?.startsWith("video") ? (
-        <video
-          muted
-          autoPlay
-          playsInline
-          controls
-          loop
-          title={media.key}
-          className="w-full h-full object-cover"
-        >
-          <source
-            src={`https://files.fangchunjia.com/${media.key}`}
-            type={media.contentType}
-          />
-        </video>
-      ) : media.contentType?.startsWith("audio") ? (
-        <>
-          <audio controls className="w-full">
-            <source
-              src={`https://files.fangchunjia.com/${media.key}`}
-              type={media.contentType}
-            />
-          </audio>
-        </>
-      ) : (
-        <div
-          className="p-4 bg-fangchunjia-lightgray cursor-default text-sm"
-          title={media.key}
-        >
-          Missing or unsupported media type
-        </div>
       )}
-    </>
+      {media?.mediaType === "video" &&
+        media.video?.asset?.playbackId !== undefined && (
+          <MuxPlayer
+            playbackId={media.video?.asset?.playbackId}
+            placeholder={media.placeholder}
+            loop
+            muted
+            streamType="on-demand"
+            preload="metadata"
+            autoPlay
+            thumbnailTime={0}
+            className="w-full m-auto"
+            style={{
+              // Reserve the box at the video's aspect ratio before metadata
+              // loads, so the player doesn't jump from a tiny box to full size.
+              aspectRatio: media.aspectRatio,
+              ["--media-object-fit" as string]: objectFit,
+              ["--media-object-position" as string]: "center",
+            }}
+            metadata={{
+              video_id: media.video?.asset?.playbackId,
+              video_title: "",
+            }}
+          />
+        )}
+    </div>
   );
 }

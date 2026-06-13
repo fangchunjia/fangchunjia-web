@@ -2,6 +2,7 @@ import { useLoaderData, data } from "react-router";
 import { useEffect, useRef } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
+import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import MediaGrid from "~/components/MediaGrid";
 import ReactLenis, { useLenis } from "lenis/react";
@@ -32,9 +33,18 @@ export async function loader({ params }: Route.LoaderArgs) {
       slug,
       externalLink,
       cover {
+        fullscreen,
         mediaType,
-        image { asset { _ref } },
-        vimeoId
+        video {
+          asset->{
+            playbackId,
+            assetId,
+            status,
+            "aspectRatio": data.aspect_ratio,
+            "duration": data.duration
+          }
+        },
+        image,
       },
       accentColor,
       description,
@@ -70,6 +80,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!project) {
     throw data("Project not found", { status: 404 });
   }
+  project.cover = await enrichCover(project.cover);
   return { project };
 }
 

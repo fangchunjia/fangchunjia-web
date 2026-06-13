@@ -2,6 +2,7 @@
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/_layout.projects._index";
 import { client, coverImageUrl } from "~/lib/sanity";
+import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import ProjectList from "~/components/ProjectList";
 import { $activeProject, $hoveredProject } from "~/stores/ui";
@@ -19,18 +20,23 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export type ProjectInfo = Pick<
-  Project,
-  | "_id"
-  | "labels"
-  | "title"
-  | "subtitle"
-  | "slug"
-  | "year"
-  | "cover"
-  | "accentColor"
-  | "lightDark"
->;
+export type ProjectInfo = Omit<
+  Pick<
+    Project,
+    | "_id"
+    | "labels"
+    | "title"
+    | "subtitle"
+    | "slug"
+    | "year"
+    | "cover"
+    | "accentColor"
+    | "lightDark"
+  >,
+  "cover"
+> & {
+  cover: Project["cover"] & { placeholder?: string; aspectRatio?: string };
+};
 
 export async function loader({}: Route.LoaderArgs) {
   const raw = await client.fetch<any[]>(groq`
@@ -59,9 +65,9 @@ export async function loader({}: Route.LoaderArgs) {
       labels[]-> { _id, title, slug }
     }
   `);
-  const projects: ProjectInfo[] = raw.map((p) => ({
-    ...p,
-  }));
+  const projects: ProjectInfo[] = await Promise.all(
+    raw.map(async (p) => ({ ...p, cover: await enrichCover(p.cover) })),
+  );
   return { projects };
 }
 

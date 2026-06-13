@@ -180,7 +180,7 @@ export type MuxVideoAssetReference = {
 
 export type MuxVideo = {
   _type: "mux.video";
-  asset?: MuxVideoAssetReference;
+  asset?: MuxVideoAsset;
 };
 
 export type SanityImageCrop = {

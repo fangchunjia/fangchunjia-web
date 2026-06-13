@@ -7,12 +7,12 @@ import { gsap } from "gsap";
 function CoverVideo({ onEnded }: { onEnded: () => void }) {
   return (
     <video
-      className="w-full h-full"
+      className="w-full h-full object-cover"
       autoPlay
       muted
       playsInline
       preload="auto"
-      poster="https://image.mux.com/e3GC55qNEuxgtjryZKO9CghBejRZfnhsNSzfQwP4ZuA/thumbnail.png?time=0"
+      poster="https://image.mux.com/e3GC55qNEuxgtjryZKO9CghBejRZfnhsNSzfQwP4ZuA/thumbnail.webp?width=1920&time=0"
       onEnded={onEnded}
     >
       <source
@@ -39,16 +39,16 @@ export default function Cover() {
     () => {
       entranceTl.current = gsap
         .timeline()
-        .from(video.current, {
-          opacity: 0,
-          duration: 1.2,
-          delay: 0.4,
-        })
-        .from(
+        // .to(video.current, {
+        //   opacity: 1,
+        //   duration: 1.2,
+        //   // delay: 0.4,
+        // })
+        .to(
           toStart.current,
           {
-            opacity: 0,
-            pointerEvents: "none",
+            opacity: 1,
+            pointerEvents: "auto",
           },
           "+=3",
         );
@@ -57,22 +57,24 @@ export default function Cover() {
   );
 
   useGSAP(() => {
-    exitTl.current = gsap
-      .timeline()
-      .to(toStart.current, { opacity: 0 })
-      .to(
-        video.current,
-        {
-          opacity: 0,
-          onComplete: () => {
-            if (end === true) {
-              setComplete(true);
-              $coverPlayed.set(true);
-            }
+    if (end === true) {
+      exitTl.current = gsap
+        .timeline()
+        .to(toStart.current, { opacity: 0 })
+        .to(
+          video.current,
+          {
+            opacity: 0,
+            onComplete: () => {
+              if (end === true) {
+                setComplete(true);
+                $coverPlayed.set(true);
+              }
+            },
           },
-        },
-        "<",
-      );
+          "<",
+        );
+    }
   }, [end]);
 
   return (
@@ -84,7 +86,10 @@ export default function Cover() {
         <div className="w-full h-full" ref={video}>
           <CoverVideo onEnded={onEnded} />
         </div>
-        <div className="absolute inset-0 flex" ref={toStart}>
+        <div
+          className="absolute inset-0 flex opacity-0 pointer-events-none"
+          ref={toStart}
+        >
           <button
             className="m-auto flex cursor-pointer p-24 group"
             onClick={onEnded}
