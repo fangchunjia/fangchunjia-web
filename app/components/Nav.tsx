@@ -18,21 +18,21 @@ const navItems: NavItem[] = [
     title: "Home",
     to: "/",
     Graphic: HomeGraphic,
-    parentClassName: "pl-3",
+    parentClassName: "pl-3 pr-1 pb-1",
     graphicClassName: "*:fill-accent",
   },
   {
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
-    parentClassName: "pl-2 pt-1",
+    parentClassName: "pl-2 pt-1 pr-1 pb-1",
     graphicClassName: "*:fill-accent",
   },
   {
     title: "Projects",
     to: "/projects",
     Graphic: ProjectsGraphic,
-    parentClassName: "pl-2 pt-1",
+    parentClassName: "pl-2 pt-1 pr-1 pb-1",
     graphicClassName: "*:fill-accent",
   },
 ];
@@ -54,10 +54,10 @@ function NavItem({ item, distance }: { item: NavItem; distance: number }) {
       }}
       transition={{ duration: 0.4 }}
     >
-      <div className={`${item.parentClassName}`}>
+      <div>
         <NavLink
           to={item.to}
-          className="block w-fit *:w-full *:transition *:fill-accent *:overflow-visible h-fit"
+          className={`block w-fit *:w-full *:transition *:fill-accent *:overflow-visible h-fit ${item.parentClassName}`}
         >
           <div className={`w-full ${item.graphicClassName}`}>
             <Graphic />

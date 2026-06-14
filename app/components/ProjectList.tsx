@@ -4,7 +4,6 @@ import { $activePos, $activeProject, $hoveredProject } from "~/stores/ui";
 import { useStore } from "@nanostores/react";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
 import applyAccentColor from "~/utils/applyAccentColor";
-import recordTransitionScroll from "~/utils/recordTransitionScroll";
 
 export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
@@ -14,7 +13,6 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const DEFAULT_ACCENT_COLOR = "#000";
 
   const handleProjectClick = (p: ProjectInfo) => {
-    recordTransitionScroll();
     $activeProject.set(p);
     const el = projectListItemRefs.current.get(p.title);
     if (el) {

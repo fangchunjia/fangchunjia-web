@@ -6,12 +6,10 @@ import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import ProjectList from "~/components/ProjectList";
 import { $activeProject, $hoveredProject } from "~/stores/ui";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { preload } from "react-dom";
-import ReactLenis from "lenis/react";
 import type { Project } from "~/types/sanity.types";
 import PageEntrance from "~/components/PageEntrance";
-import { useLenisAutoResize } from "~/utils/useLenisAutoResize";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -73,8 +71,6 @@ export async function loader({}: Route.LoaderArgs) {
 
 export default function Projects() {
   const { projects } = useLoaderData<typeof loader>();
-  const contentRef = useRef<HTMLElement>(null);
-  useLenisAutoResize(contentRef);
   useEffect(() => {
     $activeProject.set(null);
     $hoveredProject.set(null);
@@ -93,22 +89,17 @@ export default function Projects() {
 
   return (
     <PageEntrance className="project-list relative">
-      <article ref={contentRef}>
-        <ReactLenis
-          root
-          options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
-        >
-          <div className="p-4 pt-28">
-            <section className="">
-              <div className="pl-4">
-                <ProjectList projects={projects} />
-                <ProjectList projects={projects} />
-                <ProjectList projects={projects} />
-                <ProjectList projects={projects} />
-              </div>
-            </section>
-          </div>
-        </ReactLenis>
+      <article>
+        <div className="p-4 pt-28">
+          <section className="">
+            <div className="pl-4">
+              <ProjectList projects={projects} />
+              <ProjectList projects={projects} />
+              <ProjectList projects={projects} />
+              <ProjectList projects={projects} />
+            </div>
+          </section>
+        </div>
       </article>
     </PageEntrance>
   );

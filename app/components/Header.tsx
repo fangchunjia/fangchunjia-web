@@ -12,6 +12,7 @@ export default function Header({
       style={{ viewTransitionName: "site-header" }}
     >
       <div
+        className="h-fit"
         onClick={() => {
           onClickBranding();
         }}

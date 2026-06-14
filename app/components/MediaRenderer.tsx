@@ -14,7 +14,7 @@ export default function MediaRenderer({
       {media?.mediaType === "image" && media.image?.asset?._ref && (
         <img
           src={coverImageUrl(media.image.asset._ref)}
-          className={`w-full h-full object-center object-${objectFit}`}
+          className={`w-full h-full object-center ${objectFit === "contain" && "object-contain"} ${objectFit === "cover" && "object-cover"} ${objectFit === "contain" && "object-contain"}`}
         />
       )}
       {media?.mediaType === "video" &&

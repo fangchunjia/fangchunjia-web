@@ -5,37 +5,32 @@ import MediaRenderer from "./MediaRenderer";
 export default function Screen({
   item,
   isDetailPage,
+  onExitComplete,
 }: {
   item: Pick<ProjectInfo, "slug" | "cover"> | null;
   isDetailPage: boolean;
+  onExitComplete?: () => void;
 }) {
   return (
-    <div className="w-full h-full pointer-events-none relative grid grid-cols-12 gap-4">
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          className={`self-center ${item?.cover.fullscreen ? "col-start-1 col-span-12" : "col-start-4 col-span-6"}`}
-          animate={{
-            scale: isDetailPage ? 1.06 : 1,
-            transition: {
-              duration: 0.4,
-              delay: 0.1,
-            },
-          }}
-        >
+    <div className="w-full h-full pointer-events-none relative">
+      <AnimatePresence onExitComplete={onExitComplete}>
+        {item && (
           <motion.div
-            className="w-full aspect-4/3"
-            key={item?.slug.current}
+            key={item.slug.current}
+            className="absolute inset-0 flex items-center justify-center"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 1, scale: isDetailPage ? 1.06 : 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <MediaRenderer
-              media={item?.cover}
-              objectFit={item?.cover.fullscreen ? "cover" : "contain"}
-            />
+            <div className={item.cover.fullscreen ? "w-full h-full" : "w-1/2 aspect-4/3"}>
+              <MediaRenderer
+                media={item.cover}
+                objectFit={item.cover.fullscreen ? "cover" : "contain"}
+              />
+            </div>
           </motion.div>
-        </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

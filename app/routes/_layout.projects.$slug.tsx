@@ -1,18 +1,16 @@
 import { useLoaderData, data } from "react-router";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
 import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import MediaGrid from "~/components/MediaGrid";
-import ReactLenis, { useLenis } from "lenis/react";
 import { PortableText } from "@portabletext/react";
-import { $activeProject, $coverPlayed, $scrollY } from "~/stores/ui";
+import { $activeProject, $coverPlayed } from "~/stores/ui";
 import { motion } from "motion/react";
 import { useStore } from "@nanostores/react";
 import type { Project } from "~/types/sanity.types";
 import applyAccentColor from "~/utils/applyAccentColor";
-import { useLenisAutoResize } from "~/utils/useLenisAutoResize";
 import Back from "~/components/Back";
 
 export function meta({}: Route.MetaArgs) {
@@ -109,26 +107,10 @@ export default function ProjectDetail() {
     };
   }, []);
 
-  const lenis = useLenis(({ scroll }) => {
-    $scrollY.set(scroll);
-  });
-
-  const contentRef = useRef<HTMLElement>(null);
-  useLenisAutoResize(contentRef);
-
-  useEffect(() => {
-    return () => {
-      lenis?.scrollTo(0, { immediate: true });
-    };
-  }, [lenis]);
-
-  const accentColor = project.accentColor?.hex;
-
   return (
-    <article ref={contentRef}>
-      <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}>
-        {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
-        <motion.div
+    <article>
+      {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
+      <motion.div
           className="w-full relative"
           initial={{ height: "100dvh" }}
           // animate={
@@ -177,7 +159,7 @@ export default function ProjectDetail() {
                   <div className="text-xs font-medium">(scroll down)</div>
                 )}
 
-                <div className="fixed top-0 right-0">
+                <div className="fixed bottom-0 left-0">
                   <Back />
                 </div>
               </motion.div>
@@ -190,7 +172,6 @@ export default function ProjectDetail() {
             <MediaGrid grid={project.grid} />
           </section>
         )}
-      </ReactLenis>
     </article>
   );
 }
