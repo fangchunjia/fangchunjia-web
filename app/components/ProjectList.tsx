@@ -44,7 +44,6 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
           >
             <Link
               to={`/projects/${p.slug.current}`}
-              viewTransition
               className="cursor-pointer h-full w-fit block relative z-10"
               onClick={() => handleProjectClick(p)}
             >

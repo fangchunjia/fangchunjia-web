@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Outlet, useLocation, useMatches } from "react-router";
+import { useLocation, useMatches, useOutlet } from "react-router";
 import { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
 import { AnimatePresence, motion, useMotionValue } from "motion/react";
@@ -12,6 +12,7 @@ export default function ProjectsLayout() {
     (match) => match.id === "routes/_layout.projects.$slug",
   );
   const { pathname } = useLocation();
+  const outlet = useOutlet();
 
   // Track the (now persistent, layout-owned) Lenis scroll position and reset to
   // top on every projects navigation. Replaces the per-route ReactLenis
@@ -74,7 +75,6 @@ export default function ProjectsLayout() {
       <motion.div
         ref={galleryWrapperRef}
         className="fixed inset-0 overflow-hidden project-image"
-        style={{ viewTransitionName: "gallery-screen" } as React.CSSProperties}
         initial={{
           height: "100dvh",
         }}
@@ -110,7 +110,6 @@ export default function ProjectsLayout() {
               left: 0,
               x: cursorX,
               y: cursorY,
-              viewTransitionName: "project-title",
             }}
             className="font-medium text-lg mb-0 py-0 fixed z-1000 text-accent"
           >
@@ -120,17 +119,17 @@ export default function ProjectsLayout() {
           </motion.div>
         )}
       </AnimatePresence>
-      <div
-        style={
-          {
-            viewTransitionName: isDetailPage
-              ? "project-detail"
-              : "project-list-page",
-          } as React.CSSProperties
-        }
-      >
-        <Outlet />
-      </div>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {outlet}
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 }

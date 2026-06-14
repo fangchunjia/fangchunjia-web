@@ -1,5 +1,5 @@
 import { useLoaderData, data } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
 import { enrichCover } from "~/lib/mux";
@@ -83,7 +83,8 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export default function ProjectDetail() {
-  const { project } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const [project] = useState(() => data.project);
   const activeProject = useStore($activeProject);
   const coverPlayed = useStore($coverPlayed);
 

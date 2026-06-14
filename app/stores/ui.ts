@@ -16,4 +16,4 @@ export const $scrollY = atom<number>(0);
 
 // Owned by Cover. Flips to true when the splash cover has finished playing,
 // so route entrance animations can wait until the splash is done.
-export const $coverPlayed = atom<boolean>(false);
+export const $coverPlayed = atom<boolean>(true);

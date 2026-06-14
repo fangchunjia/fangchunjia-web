@@ -6,10 +6,9 @@ import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import ProjectList from "~/components/ProjectList";
 import { $activeProject, $hoveredProject } from "~/stores/ui";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { preload } from "react-dom";
 import type { Project } from "~/types/sanity.types";
-import PageEntrance from "~/components/PageEntrance";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -70,7 +69,8 @@ export async function loader({}: Route.LoaderArgs) {
 }
 
 export default function Projects() {
-  const { projects } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const [projects] = useState(() => data.projects);
   useEffect(() => {
     $activeProject.set(null);
     $hoveredProject.set(null);
@@ -88,7 +88,7 @@ export default function Projects() {
   });
 
   return (
-    <PageEntrance className="project-list relative">
+    <div className="project-list relative">
       <article>
         <div className="p-4 pt-28">
           <section className="">
@@ -101,6 +101,6 @@ export default function Projects() {
           </section>
         </div>
       </article>
-    </PageEntrance>
+    </div>
   );
 }
