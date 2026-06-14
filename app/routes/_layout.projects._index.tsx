@@ -1,12 +1,13 @@
 // app/routes/projects.tsx
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/_layout.projects._index";
-import { client, urlFor } from "~/lib/sanity";
+import { client, coverImageUrl } from "~/lib/sanity";
+import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import ProjectList from "~/components/ProjectList";
 import { $activeProject, $hoveredProject } from "~/stores/ui";
 import { useEffect } from "react";
-import ReactLenis from "lenis/react";
+import { preload } from "react-dom";
 import type { Project } from "~/types/sanity.types";
 import PageEntrance from "~/components/PageEntrance";
 
@@ -17,35 +18,40 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export type ProjectInfo = Pick<
-  Project,
-  | "_id"
-  | "labels"
-  | "title"
-  | "subtitle"
-  | "slug"
-  | "year"
-  | "cover"
-  | "accentColor"
-  | "lightDark"
->;
+export type ProjectInfo = Omit<
+  Pick<
+    Project,
+    | "_id"
+    | "labels"
+    | "title"
+    | "subtitle"
+    | "slug"
+    | "year"
+    | "cover"
+    | "accentColor"
+    | "lightDark"
+  >,
+  "cover"
+> & {
+  cover: Project["cover"] & { placeholder?: string; aspectRatio?: string };
+};
 
 export async function loader({}: Route.LoaderArgs) {
   const raw = await client.fetch<any[]>(groq`
-    *[_type == "project"] | order(year desc) {
+    *[_type == "project"] | order(orderRank) {
       _id,
       title,
       subtitle,
       year,
       slug,
       cover {
+        fullscreen,
         mediaType,
         video {
           asset->{
             playbackId,
             assetId,
             status,
-            // optional, useful for posters/layout:
             "aspectRatio": data.aspect_ratio,
             "duration": data.duration
           }
@@ -57,9 +63,9 @@ export async function loader({}: Route.LoaderArgs) {
       labels[]-> { _id, title, slug }
     }
   `);
-  const projects: ProjectInfo[] = raw.map((p) => ({
-    ...p,
-  }));
+  const projects: ProjectInfo[] = await Promise.all(
+    raw.map(async (p) => ({ ...p, cover: await enrichCover(p.cover) })),
+  );
   return { projects };
 }
 
@@ -70,32 +76,30 @@ export default function Projects() {
     $hoveredProject.set(null);
   }, []);
 
+  // Eagerly warm the browser cache for cover images at low priority, so a
+  // cover appears instantly on hover without competing with critical paint.
+  projects?.forEach((p) => {
+    if (p.cover.mediaType === "image" && p.cover.image?.asset?._ref) {
+      preload(coverImageUrl(p.cover.image.asset._ref), {
+        as: "image",
+        fetchPriority: "low",
+      });
+    }
+  });
+
   return (
     <PageEntrance className="project-list relative">
-      {/* Eager load cover images */}
-      {projects?.map((p) =>
-        p.cover.mediaType === "image" && p.cover.image?.asset?._ref ? (
-          <link
-            key={p._id}
-            rel="prefetch"
-            as="image"
-            href={urlFor(p.cover.image.asset._ref).url()}
-          />
-        ) : null,
-      )}
       <article>
-        <ReactLenis
-          root
-          options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
-        >
-          <div className="p-4 pt-28">
-            <section className="">
-              <div className="pl-4">
-                <ProjectList projects={projects} />
-              </div>
-            </section>
-          </div>
-        </ReactLenis>
+        <div className="p-4 pt-28">
+          <section className="">
+            <div className="pl-4">
+              <ProjectList projects={projects} />
+              <ProjectList projects={projects} />
+              <ProjectList projects={projects} />
+              <ProjectList projects={projects} />
+            </div>
+          </section>
+        </div>
       </article>
     </PageEntrance>
   );

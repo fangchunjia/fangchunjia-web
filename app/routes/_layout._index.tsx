@@ -1,5 +1,5 @@
-import Breeze from "~/components/Breeze";
 import type { Route } from "./+types/_layout._index";
+import PageEntrance from "~/components/PageEntrance";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,12 +11,9 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   return (
     <>
-      <div className="w-full h-full overflow-clip flex justify-center">
-        <div className="fixed top-0 right-0 px-2 py-1 text-white mix-blend-difference">
-          {/* {hoveredHighlight?.name} */}
-        </div>
-        <Breeze setHoveredIndex={() => {}} />
-      </div>
+      <PageEntrance className="w-full flex flex-1">
+        <article className="m-auto">Waiting for Jiajia's design ^_^</article>
+      </PageEntrance>
     </>
   );
 }
