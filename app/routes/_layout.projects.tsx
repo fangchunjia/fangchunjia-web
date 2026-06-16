@@ -21,12 +21,15 @@ export default function ProjectsLayout() {
   useEffect(() => {
     lenis?.scrollTo(0, { immediate: true });
   }, [pathname]);
-  const galleryWrapperRef = useRef<HTMLDivElement>(null);
   const hoveredProject = useStore($hoveredProject);
   const activeProject = useStore($activeProject);
 
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
+  // Gallery cover's scroll-follow offset. Driven as a motion value (not an
+  // imperative style.transform) so Motion owns the transform and won't clobber
+  // it back to 0 on re-renders during the transition.
+  const galleryY = useMotionValue(0);
   const isFollowingRef = useRef(true);
 
   // This layout owns the on-screen project display for the whole projects
@@ -64,28 +67,25 @@ export default function ProjectsLayout() {
   useEffect(() => {
     if (!isDetailPage) return;
     return $scrollY.listen((y) => {
-      if (!galleryWrapperRef.current) return;
-      const maxTranslate = window.innerHeight - 32;
-      galleryWrapperRef.current.style.transform = `translateY(-${Math.min(y, maxTranslate)}px)`;
+      // Track scroll 1:1 so the fixed cover scrolls away with the content
+      // (no clamp — capping it left the cover parked a sliver short).
+      galleryY.set(-y);
     });
   }, [isDetailPage]);
 
   return (
     <>
       <motion.div
-        ref={galleryWrapperRef}
         className="fixed inset-0 overflow-hidden project-image"
         initial={{
           height: "100dvh",
         }}
+        style={{ y: galleryY }}
       >
         <Screen
           item={displayItem}
           isDetailPage={isDetailPage}
-          onExitComplete={() => {
-            if (galleryWrapperRef.current)
-              galleryWrapperRef.current.style.transform = "";
-          }}
+          onExitComplete={() => galleryY.set(0)}
         />
       </motion.div>
       {/* {onScreenProject && (
@@ -123,8 +123,15 @@ export default function ProjectsLayout() {
         <motion.div
           key={pathname}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          // $slug slides up on exit (isDetailPage is true while $slug is the
+          // rendered child, so its retained exit variant is the slide); other
+          // routes just fade.
+          exit={
+            isDetailPage
+              ? { y: -80, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+              : { opacity: 0, transition: { duration: 0.3 } }
+          }
           transition={{ duration: 0.3 }}
         >
           {outlet}

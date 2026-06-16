@@ -112,67 +112,67 @@ export default function ProjectDetail() {
     <article>
       {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
       <motion.div
-          className="w-full relative"
-          initial={{ height: "100dvh" }}
-          // animate={
-          //   coverPlayed
-          //     ? { height: "calc(100dvh - 32px)" }
-          //     : { height: "100dvh" }
-          // }
-          transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
-        >
-          <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
-            <div className="col-span-1 col-start-2 flex flex-col justify-end gap-4 text-accent">
+        className="w-full relative"
+        initial={{ height: "100dvh" }}
+        // animate={
+        //   coverPlayed
+        //     ? { height: "calc(100dvh - 32px)" }
+        //     : { height: "100dvh" }
+        // }
+        transition={{ duration: 0.4, delay: 0.2, ease: [0.72, 0, 0.24, 1] }}
+      >
+        <section className="grid grid-cols-3 absolute inset-0 p-4 gap-4">
+          <div className="col-span-1 col-start-2 flex flex-col justify-end gap-4 text-accent">
+            <motion.div
+              className="flex flex-col gap-2 p-2"
+              initial={{
+                opacity: 0,
+              }}
+              animate={
+                coverPlayed
+                  ? {
+                      opacity: 1,
+                      transition: {
+                        delay: 1,
+                        duration: 0.4,
+                      },
+                    }
+                  : { opacity: 0 }
+              }
+            >
               <motion.div
-                className="flex flex-col gap-2 p-2"
-                initial={{
-                  opacity: 0,
-                }}
-                animate={
-                  coverPlayed
-                    ? {
-                        opacity: 1,
-                        transition: {
-                          delay: 1,
-                          duration: 0.4,
-                        },
-                      }
-                    : { opacity: 0 }
-                }
+                drag
+                dragMomentum={false}
+                className="flex flex-col gap-2"
               >
-                <motion.div
-                  drag
-                  dragMomentum={false}
-                  className="flex flex-col gap-2"
-                >
-                  <div className="text-sm font-medium">
-                    {project.subtitle && (
-                      <div className="mb-2">{project.subtitle}</div>
-                    )}
-                    {project.description && (
-                      <div className="leading-[16px]">
-                        <PortableText value={project.description} />
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-                {project.grid?.length && (
-                  <div className="text-xs font-medium">(scroll down)</div>
-                )}
-
-                <div className="fixed bottom-0 left-0">
-                  <Back />
+                <div className="text-sm font-medium">
+                  {project.subtitle && (
+                    <div className="mb-2">{project.subtitle}</div>
+                  )}
+                  {project.description && (
+                    <div className="leading-[16px]">
+                      <PortableText value={project.description} />
+                    </div>
+                  )}
                 </div>
               </motion.div>
-            </div>
-          </section>
-        </motion.div>
-        {/* Images section — follows cover in natural flow */}
-        {project.grid?.length && (
-          <section className="py-8 px-4 bg-fangchunjia-gray">
-            <MediaGrid grid={project.grid} />
-          </section>
-        )}
+              {project.grid?.length && (
+                <div className="text-xs font-medium">(scroll down)</div>
+              )}
+
+              <div className="fixed bottom-0 left-0">
+                <Back />
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </motion.div>
+      {/* Images section — follows cover in natural flow */}
+      {project.grid?.length && (
+        <section className="py-8 px-4 bg-fangchunjia-gray">
+          <MediaGrid grid={project.grid} />
+        </section>
+      )}
     </article>
   );
 }
