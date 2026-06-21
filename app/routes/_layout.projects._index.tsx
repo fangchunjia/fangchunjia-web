@@ -22,7 +22,7 @@ export type ProjectInfo = Omit<
   Pick<
     Project,
     | "_id"
-    | "labels"
+    | "category"
     | "title"
     | "subtitle"
     | "slug"
@@ -38,12 +38,17 @@ export type ProjectInfo = Omit<
 
 export async function loader({}: Route.LoaderArgs) {
   const raw = await client.fetch<any[]>(groq`
-    *[_type == "project"] | order(orderRank) {
+    *[_type == "project"] | order(category->orderRank asc, orderRank asc) {
       _id,
       title,
       subtitle,
       year,
       slug,
+      category->{
+        _id,
+        title,
+        slug
+      },
       cover {
         fullscreen,
         mediaType,
@@ -92,11 +97,11 @@ export default function Projects() {
       <article>
         <div className="p-4 pt-28">
           <section className="">
-            <div className="pl-4">
+            <div className="pl-4 pr-8">
               <ProjectList projects={projects} />
+              {/* <ProjectList projects={projects} />
               <ProjectList projects={projects} />
-              <ProjectList projects={projects} />
-              <ProjectList projects={projects} />
+              <ProjectList projects={projects} /> */}
             </div>
           </section>
         </div>

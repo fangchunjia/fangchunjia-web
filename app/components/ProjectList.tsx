@@ -1,13 +1,16 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router";
-import { $activePos, $activeProject, $hoveredProject } from "~/stores/ui";
-import { useStore } from "@nanostores/react";
+import {
+  $activePos,
+  $activeProject,
+  $hoveredEl,
+  $hoveredProject,
+} from "~/stores/ui";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
 import applyAccentColor from "~/utils/applyAccentColor";
 
 export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
-  const hoveredProject = useStore($hoveredProject);
 
   const projectListItemRefs = useRef<Map<string, HTMLElement>>(new Map());
   const DEFAULT_ACCENT_COLOR = "#000";
@@ -28,51 +31,63 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   }, []);
 
   return (
-    <ul className="project-list relative">
-      {projects.map((p) => (
-        <li key={p.slug.current}>
-          <div
-            className="relative group w-fit"
-            onMouseEnter={() => {
-              $hoveredProject.set(p);
-              applyAccentColor(p.accentColor.hex || null);
-            }}
-            onMouseLeave={() => {
-              $hoveredProject.set(null);
-              applyAccentColor(committed.current);
-            }}
+    <ul className="relative">
+      {projects.map((p, i) => {
+        const isFirstOfCategory =
+          i === 0 || projects[i - 1].category.title !== p.category.title;
+        return (
+          <li
+            key={p.slug.current}
+            className="grid grid-cols-12 gap-4 group text-accent"
           >
-            <Link
-              to={`/projects/${p.slug.current}`}
-              viewTransition
-              className="cursor-pointer h-full w-fit block relative z-10"
-              onClick={() => handleProjectClick(p)}
+            <div className="col-start-1 col-span-2 font-medium text-sm">
+              {isFirstOfCategory ? `(${p.category.title})` : ""}
+            </div>
+            <div
+              className="relative w-fit col-span-6"
+              onMouseEnter={(e) => {
+                $hoveredProject.set(p);
+                $hoveredEl.set(e.currentTarget);
+                applyAccentColor(p.accentColor.hex || null);
+              }}
+              onMouseLeave={(e) => {
+                // When moving between adjacent items the next item's mouseenter
+                // can fire before this leave; guard so a stale leave doesn't
+                // clobber the hover that already took over.
+                if ($hoveredEl.get() !== e.currentTarget) return;
+                $hoveredProject.set(null);
+                $hoveredEl.set(null);
+                applyAccentColor(committed.current);
+              }}
             >
-              <div
-                ref={(el) => {
-                  if (el) projectListItemRefs.current.set(p.title, el);
-                }}
-                className="flex gap-2 font-medium mb-0 py-0 text-md"
+              <Link
+                to={`/projects/${p.slug.current}`}
+                viewTransition
+                className="cursor-pointer h-full w-fit block relative z-10"
+                onClick={() => handleProjectClick(p)}
               >
                 <div
-                  className="w-fit opacity-60 group-hover:opacity-100 transition text-accent"
-                  style={{
-                    opacity:
-                      hoveredProject === null ||
-                      p.slug.current === hoveredProject?.slug?.current
-                        ? "1"
-                        : "0.6",
+                  ref={(el) => {
+                    if (el) projectListItemRefs.current.set(p.title, el);
                   }}
+                  className="flex gap-2 font-medium mb-0 py-0 text-md"
                 >
-                  <span className="block px-1 -ml-1 leading-[22px] ">
-                    {p.title}
-                  </span>
+                  <div className="w-fit">
+                    <span className="block px-1 -ml-1 leading-[22px] ">
+                      {p.title}
+                    </span>
+                  </div>
                 </div>
+              </Link>
+            </div>
+            <div className="col-start-9 col-span-4 font-medium text-sm w-full">
+              <div className="w-fit ml-auto" data-subtitle>
+                {p.subtitle}
               </div>
-            </Link>
-          </div>
-        </li>
-      ))}
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }
