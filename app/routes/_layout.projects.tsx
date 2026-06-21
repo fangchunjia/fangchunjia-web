@@ -3,8 +3,14 @@ import { Outlet, useLocation, useMatches } from "react-router";
 import { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
 import { AnimatePresence, motion, useMotionValue } from "motion/react";
-import { $activeProject, $hoveredProject, $scrollY } from "~/stores/ui";
+import {
+  $activeProject,
+  $hoveredEl,
+  $hoveredProject,
+  $scrollY,
+} from "~/stores/ui";
 import Screen from "~/components/Screen";
+import Back from "~/components/Back";
 
 export default function ProjectsLayout() {
   const matches = useMatches();
@@ -24,8 +30,12 @@ export default function ProjectsLayout() {
   const hoveredProject = useStore($hoveredProject);
   const activeProject = useStore($activeProject);
 
-  const cursorX = useMotionValue(0);
-  const cursorY = useMotionValue(0);
+  // Title-shadow anchor (centered on the hovered title + drift) and subtitle-shadow
+  // anchor (centered on the hovered subtitle, drifting by the SAME title offset).
+  const titleX = useMotionValue(0);
+  const titleY = useMotionValue(0);
+  const subX = useMotionValue(0);
+  const subY = useMotionValue(0);
   const isFollowingRef = useRef(true);
 
   // This layout owns the on-screen project display for the whole projects
@@ -38,14 +48,38 @@ export default function ProjectsLayout() {
   }, []);
 
   useEffect(() => {
-    isFollowingRef.current = !isDetailPage;
-  }, [isDetailPage]);
-
-  useEffect(() => {
+    // Cursor acts as a light source: the shadow title sits centered on the
+    // hovered item and drifts subtly in the opposite direction of the cursor.
+    const DRIFT = 0.2;
+    const clamp = (v: number, min: number, max: number) =>
+      Math.max(min, Math.min(max, v));
     const onMove = (e: MouseEvent) => {
       if (!isFollowingRef.current) return;
-      cursorX.set(e.clientX + 16);
-      cursorY.set(e.clientY + 16);
+      const item = $hoveredEl.get();
+      // Skip a detached node: during navigation the hovered item can be removed
+      // from the DOM before isFollowingRef flips, and getBoundingClientRect on a
+      // detached element returns zeros — which would snap the title to (0, 0).
+      if (!item || !item.isConnected) return;
+      const r = item.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const halfW = r.width / 2;
+      const halfH = r.height / 2;
+      const relX = clamp(e.clientX - cx, -halfW, halfW);
+      const relY = clamp(e.clientY - cy, -halfH, halfH);
+      const offsetX = -relX * DRIFT;
+      const offsetY = -relY * DRIFT;
+      // Title shadow: centered on the hovered title + drift.
+      titleX.set(cx + offsetX);
+      titleY.set(cy + offsetY);
+      // Subtitle shadow: centered on the hovered subtitle's own position, but
+      // drifting by the SAME title offset so it moves in lockstep with the title.
+      const subEl = item.parentElement?.querySelector("[data-subtitle]");
+      if (subEl) {
+        const sr = subEl.getBoundingClientRect();
+        subX.set(sr.left + sr.width / 2 + offsetX);
+        subY.set(sr.top + sr.height / 2 + offsetY);
+      }
     };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
@@ -64,35 +98,32 @@ export default function ProjectsLayout() {
     if (!isDetailPage) return;
     return $scrollY.listen((y) => {
       if (!galleryWrapperRef.current) return;
-      const maxTranslate = window.innerHeight - 32;
-      galleryWrapperRef.current.style.transform = `translateY(-${Math.min(y, maxTranslate)}px)`;
+      // Write transform synchronously (same frame as Lenis's scroll emit) for
+      // linear 1:1 tracking — a motion value flushes a frame later and reads as
+      // springy. Plain <div> (not motion.div) so Motion/React never manage
+      // `transform`, so this imperative write isn't clobbered on re-render.
+      galleryWrapperRef.current.style.transform = `translateY(${-y}px)`;
     });
   }, [isDetailPage]);
 
   return (
     <>
-      <motion.div
+      <div
         ref={galleryWrapperRef}
-        className="fixed inset-0 overflow-hidden project-image"
-        style={{ viewTransitionName: "gallery-screen" } as React.CSSProperties}
-        initial={{
-          height: "100dvh",
-        }}
+        className="fixed inset-0 overflow-hidden project-image h-dvh"
+        style={{ viewTransitionName: "gallery-screen" }}
       >
-        <Screen
-          item={displayItem}
-          isDetailPage={isDetailPage}
-          onExitComplete={() => {
-            if (galleryWrapperRef.current)
-              galleryWrapperRef.current.style.transform = "";
-          }}
-        />
-      </motion.div>
-      {/* {onScreenProject && (
-        <div className="">
-          <ProjectTitle project={onScreenProject} />
-        </div>
-      )} */}
+        <motion.div className="w-full h-full">
+          <Screen
+            item={displayItem}
+            isDetailPage={isDetailPage}
+            onExitComplete={() => {
+              if (galleryWrapperRef.current)
+                galleryWrapperRef.current.style.transform = "";
+            }}
+          />
+        </motion.div>
+      </div>
       <AnimatePresence>
         {onScreenProject && (
           <motion.div
@@ -101,33 +132,69 @@ export default function ProjectsLayout() {
             animate={{
               filter: isDetailPage ? "blur(0px)" : "blur(2px)",
               opacity: isDetailPage ? 1 : 0.8,
-              backgroundColor: isDetailPage ? "#e7e7e7ff" : "#e7e7e700",
               transition: { duration: 1 },
             }}
             exit={{ opacity: 0, transition: { duration: 0.4 } }}
             style={{
-              top: 0,
-              left: 0,
-              x: cursorX,
-              y: cursorY,
+              x: titleX,
+              y: titleY,
               viewTransitionName: "project-title",
+              zIndex: isDetailPage ? 1000 : 10,
             }}
-            className="font-medium text-lg mb-0 py-0 fixed z-1000 text-accent"
+            className="font-medium fixed top-0 left-0 text-accent pointer-events-none"
           >
-            <motion.div className="pointer-events-none top-full left-full">
-              <h1>{onScreenProject.title}</h1>
-            </motion.div>
+            <div className="-translate-x-1/2 -translate-y-1/2">
+              <h1 className="text-lg leading-[22px]">
+                {onScreenProject.title}
+              </h1>
+            </div>
+          </motion.div>
+        )}
+        {onScreenProject && (
+          <motion.div
+            key="project-subtitle"
+            initial={{ filter: "blur(2px)" }}
+            animate={{
+              filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+              opacity: isDetailPage ? 1 : 0.8,
+              transition: { duration: 1 },
+            }}
+            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            style={{
+              x: subX,
+              y: subY,
+              viewTransitionName: "project-subtitle",
+              zIndex: isDetailPage ? 1000 : 10,
+            }}
+            className="font-medium text-md fixed top-0 left-0 text-accent pointer-events-none"
+          >
+            <div className="-translate-x-1/2 -translate-y-1/2 text-md">
+              {onScreenProject.subtitle}
+            </div>
+          </motion.div>
+        )}
+        {onScreenProject && isDetailPage && (
+          <motion.div
+            key="project-back"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 1 } }}
+            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            style={{ y: titleY, zIndex: 1000 }}
+            className="font-medium fixed top-0 left-4 text-accent"
+          >
+            <div className="-translate-y-1/2">
+              <Back />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
       <div
-        style={
-          {
-            viewTransitionName: isDetailPage
-              ? "project-detail"
-              : "project-list-page",
-          } as React.CSSProperties
-        }
+        className="relative z-20"
+        style={{
+          viewTransitionName: isDetailPage
+            ? "project-detail"
+            : "project-list-page",
+        }}
       >
         <Outlet />
       </div>

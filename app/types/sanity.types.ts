@@ -98,6 +98,13 @@ export type Slug = {
   source?: string;
 };
 
+export type CategoryReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "category";
+};
+
 export type LabelReference = {
   _ref: string;
   _type: "reference";
@@ -116,6 +123,7 @@ export type Project = {
   subtitle?: string;
   year: number;
   slug: Slug;
+  category: CategoryReference;
   labels?: Array<
     {
       _key: string;
@@ -180,7 +188,7 @@ export type MuxVideoAssetReference = {
 
 export type MuxVideo = {
   _type: "mux.video";
-  asset?: MuxVideoAsset;
+  asset?: MuxVideoAssetReference;
 };
 
 export type SanityImageCrop = {
@@ -206,6 +214,17 @@ export type Color = {
   hsl?: HslaColor;
   hsv?: HsvaColor;
   rgb?: RgbaColor;
+};
+
+export type Category = {
+  _id: string;
+  _type: "category";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderRank?: string;
+  title: string;
+  slug: Slug;
 };
 
 export type Profile = {
@@ -488,6 +507,7 @@ export type AllSanitySchemaTypes =
   | ImageGridBlock
   | Label
   | Slug
+  | CategoryReference
   | LabelReference
   | Project
   | MuxVideoAssetReference
@@ -495,6 +515,7 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | Color
+  | Category
   | Profile
   | Settings
   | About
