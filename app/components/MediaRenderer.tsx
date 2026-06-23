@@ -1,12 +1,12 @@
 import MuxPlayer from "@mux/mux-player-react";
 import { coverImageUrl } from "~/lib/sanity";
-import type { ProjectInfo } from "~/routes/_layout.projects._index";
+import type { EnrichedMedia } from "~/routes/_layout.projects._index";
 
 export default function MediaRenderer({
   media,
   objectFit = "contain",
 }: {
-  media: ProjectInfo["cover"] | undefined;
+  media: EnrichedMedia | undefined;
   objectFit?: "fit" | "contain" | "cover";
 }) {
   return (

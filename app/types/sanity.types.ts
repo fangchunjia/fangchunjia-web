@@ -20,7 +20,6 @@ export type RichTextGridBlock = {
   gridColumnStart: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   gridColumnSpan: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   gridRowStart?: number;
-  gridRowSpan?: number;
   body?: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -41,22 +40,12 @@ export type RichTextGridBlock = {
   }>;
 };
 
-export type AudioGridBlock = {
-  _type: "audioGridBlock";
+export type MediaGridBlock = {
+  _type: "mediaGridBlock";
   gridColumnStart: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   gridColumnSpan: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   gridRowStart?: number;
-  gridRowSpan?: number;
-  audioUrl?: string;
-};
-
-export type VideoGridBlock = {
-  _type: "videoGridBlock";
-  gridColumnStart: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-  gridColumnSpan: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-  gridRowStart?: number;
-  gridRowSpan?: number;
-  video?: MuxVideo;
+  media?: Media;
 };
 
 export type SanityImageAssetReference = {
@@ -66,12 +55,9 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
-export type ImageGridBlock = {
-  _type: "imageGridBlock";
-  gridColumnStart: number;
-  gridColumnSpan: number;
-  gridRowStart?: number;
-  gridRowSpan?: number;
+export type Media = {
+  _type: "media";
+  mediaType: "image" | "video";
   image?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -80,6 +66,7 @@ export type ImageGridBlock = {
     _type: "image";
   };
   alt?: string;
+  video?: MuxVideo;
 };
 
 export type Label = {
@@ -132,15 +119,7 @@ export type Project = {
   externalLink?: string;
   cover: {
     fullscreen?: boolean;
-    mediaType: "image" | "video";
-    image?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    video?: MuxVideo;
+    media?: Media;
   };
   primaryColor?: Color;
   accentColor: Color;
@@ -166,17 +145,20 @@ export type Project = {
   grid?: Array<
     | ({
         _key: string;
-      } & ImageGridBlock)
-    | ({
-        _key: string;
-      } & VideoGridBlock)
-    | ({
-        _key: string;
-      } & AudioGridBlock)
+      } & MediaGridBlock)
     | ({
         _key: string;
       } & RichTextGridBlock)
   >;
+};
+
+export type Color = {
+  _type: "color";
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
 };
 
 export type MuxVideoAssetReference = {
@@ -205,15 +187,6 @@ export type SanityImageHotspot = {
   y: number;
   height: number;
   width: number;
-};
-
-export type Color = {
-  _type: "color";
-  hex?: string;
-  alpha?: number;
-  hsl?: HslaColor;
-  hsv?: HsvaColor;
-  rgb?: RgbaColor;
 };
 
 export type Category = {
@@ -501,20 +474,19 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | RichTextGridBlock
-  | AudioGridBlock
-  | VideoGridBlock
+  | MediaGridBlock
   | SanityImageAssetReference
-  | ImageGridBlock
+  | Media
   | Label
   | Slug
   | CategoryReference
   | LabelReference
   | Project
+  | Color
   | MuxVideoAssetReference
   | MuxVideo
   | SanityImageCrop
   | SanityImageHotspot
-  | Color
   | Category
   | Profile
   | Settings

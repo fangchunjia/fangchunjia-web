@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation, useMatches } from "react-router";
 import { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
@@ -11,6 +11,12 @@ import {
 } from "~/stores/ui";
 import Screen from "~/components/Screen";
 import Back from "~/components/Back";
+
+// Layout effect on the client (runs after commit, before paint) so the shadow's
+// position flips together with its React-rendered text; falls back to useEffect
+// on the server to avoid the SSR warning.
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export default function ProjectsLayout() {
   const matches = useMatches();
@@ -37,6 +43,11 @@ export default function ProjectsLayout() {
   const subX = useMotionValue(0);
   const subY = useMotionValue(0);
   const isFollowingRef = useRef(true);
+  // The element the shadow position currently follows. Kept in sync with the
+  // React-rendered project (see the layout effect below) so `onMove` never moves
+  // the position to a project whose text hasn't been committed yet (avoids a
+  // one-frame flicker of the previous title at the new position).
+  const followElRef = useRef<HTMLElement | null>(null);
 
   // This layout owns the on-screen project display for the whole projects
   // section; reset to neutral when the section unmounts (leaving to Home/About).
@@ -55,7 +66,9 @@ export default function ProjectsLayout() {
       Math.max(min, Math.min(max, v));
     const onMove = (e: MouseEvent) => {
       if (!isFollowingRef.current) return;
-      const item = $hoveredEl.get();
+      // Follow the element matching the currently RENDERED project (not the raw
+      // $hoveredEl, which updates a frame ahead of React's text commit).
+      const item = followElRef.current;
       // Skip a detached node: during navigation the hovered item can be removed
       // from the DOM before isFollowingRef flips, and getBoundingClientRect on a
       // detached element returns zeros — which would snap the title to (0, 0).
@@ -86,6 +99,24 @@ export default function ProjectsLayout() {
   }, []);
 
   const onScreenProject = activeProject || hoveredProject || null;
+
+  // When the rendered project changes, sync the followed element and snap the
+  // shadow's base position (center, no drift) in the SAME commit/paint as the new
+  // text — so content and position always flip together.
+  useIsoLayoutEffect(() => {
+    const el = $hoveredEl.get();
+    followElRef.current = el;
+    if (!el || !el.isConnected) return;
+    const r = el.getBoundingClientRect();
+    titleX.set(r.left + r.width / 2);
+    titleY.set(r.top + r.height / 2);
+    const subEl = el.parentElement?.querySelector("[data-subtitle]");
+    if (subEl) {
+      const sr = subEl.getBoundingClientRect();
+      subX.set(sr.left + sr.width / 2);
+      subY.set(sr.top + sr.height / 2);
+    }
+  }, [onScreenProject]);
 
   const displayItem = onScreenProject
     ? { slug: onScreenProject.slug, cover: onScreenProject.cover }
