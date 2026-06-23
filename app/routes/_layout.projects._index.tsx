@@ -8,7 +8,12 @@ import ProjectList from "~/components/ProjectList";
 import { $activeProject, $hoveredProject } from "~/stores/ui";
 import { useEffect } from "react";
 import { preload } from "react-dom";
-import type { Project } from "~/types/sanity.types";
+import type {
+  Media,
+  MuxVideo,
+  MuxVideoAssetReference,
+  Project,
+} from "~/types/sanity.types";
 import PageEntrance from "~/components/PageEntrance";
 
 export function meta({}: Route.MetaArgs) {
@@ -17,6 +22,29 @@ export function meta({}: Route.MetaArgs) {
     { name: "description", content: "Chunjia Fang's Site" },
   ];
 }
+
+// The GROQ query dereferences `video.asset` (asset->{ playbackId, "aspectRatio":
+// data.aspect_ratio, ... }), but sanity-typegen models it as a plain reference.
+// Reflect the dereferenced runtime shape here.
+type MuxAssetDeref = {
+  playbackId?: string;
+  assetId?: string;
+  status?: string;
+  aspectRatio?: string;
+  duration?: number;
+};
+
+// Cover media augmented in the loader with a blur `placeholder` and a
+// CSS-ready `aspectRatio` so the player can reserve its box before load. The
+// asset is intersected with MuxAssetDeref (not replaced) so EnrichedMedia stays
+// mutually assignable with the generated `Media` type.
+export type EnrichedMedia = Omit<Media, "video"> & {
+  video?: Omit<MuxVideo, "asset"> & {
+    asset?: MuxVideoAssetReference & MuxAssetDeref;
+  };
+  placeholder?: string;
+  aspectRatio?: string;
+};
 
 export type ProjectInfo = Omit<
   Pick<
@@ -33,7 +61,7 @@ export type ProjectInfo = Omit<
   >,
   "cover"
 > & {
-  cover: Project["cover"] & { placeholder?: string; aspectRatio?: string };
+  cover: Omit<Project["cover"], "media"> & { media?: EnrichedMedia };
 };
 
 export async function loader({}: Route.LoaderArgs) {
@@ -51,17 +79,20 @@ export async function loader({}: Route.LoaderArgs) {
       },
       cover {
         fullscreen,
-        mediaType,
-        video {
-          asset->{
-            playbackId,
-            assetId,
-            status,
-            "aspectRatio": data.aspect_ratio,
-            "duration": data.duration
-          }
-        },
-        image,
+        media {
+          mediaType,
+          video {
+            asset->{
+              playbackId,
+              assetId,
+              status,
+              "aspectRatio": data.aspect_ratio,
+              "duration": data.duration
+            }
+          },
+          image,
+          alt
+        }
       },
       accentColor,
       lightDark,
@@ -76,6 +107,7 @@ export async function loader({}: Route.LoaderArgs) {
 
 export default function Projects() {
   const { projects } = useLoaderData<typeof loader>();
+  console.log(projects);
   useEffect(() => {
     $activeProject.set(null);
     $hoveredProject.set(null);
@@ -84,8 +116,11 @@ export default function Projects() {
   // Eagerly warm the browser cache for cover images at low priority, so a
   // cover appears instantly on hover without competing with critical paint.
   projects?.forEach((p) => {
-    if (p.cover.mediaType === "image" && p.cover.image?.asset?._ref) {
-      preload(coverImageUrl(p.cover.image.asset._ref), {
+    if (
+      p.cover.media?.mediaType === "image" &&
+      p.cover.media.image?.asset?._ref
+    ) {
+      preload(coverImageUrl(p.cover.media.image.asset._ref), {
         as: "image",
         fetchPriority: "low",
       });

@@ -34,7 +34,7 @@ export default function Screen({
               }
             >
               <MediaRenderer
-                media={item.cover}
+                media={item.cover.media}
                 objectFit={item.cover.fullscreen ? "cover" : "contain"}
               />
             </div>

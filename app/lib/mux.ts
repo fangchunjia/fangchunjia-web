@@ -45,18 +45,18 @@ function toCssAspectRatio(
 export async function enrichCover(
   cover: ProjectInfo["cover"],
 ): Promise<ProjectInfo["cover"]> {
-  const playbackId = cover?.video?.asset?.playbackId;
-  if (cover?.mediaType !== "video" || !playbackId) return cover;
+  const media = cover?.media;
+  const playbackId = media?.video?.asset?.playbackId;
+  if (media?.mediaType !== "video" || !playbackId) return cover;
 
   const blur = await getBlurUp(playbackId);
-  // `aspectRatio` is a GROQ alias of `data.aspect_ratio`; it exists at runtime
-  // but isn't part of the generated MuxVideoAsset type, so read it via a cast.
-  const sanityRatio = (
-    cover.video?.asset as { aspectRatio?: string } | undefined
-  )?.aspectRatio;
+  const sanityRatio = media.video?.asset?.aspectRatio;
   return {
     ...cover,
-    placeholder: blur?.blurDataURL,
-    aspectRatio: toCssAspectRatio(sanityRatio, blur?.aspectRatio),
+    media: {
+      ...media,
+      placeholder: blur?.blurDataURL,
+      aspectRatio: toCssAspectRatio(sanityRatio, blur?.aspectRatio),
+    },
   };
 }

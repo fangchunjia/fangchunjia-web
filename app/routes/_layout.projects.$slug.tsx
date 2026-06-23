@@ -32,17 +32,20 @@ export async function loader({ params }: Route.LoaderArgs) {
       externalLink,
       cover {
         fullscreen,
-        mediaType,
-        video {
-          asset->{
-            playbackId,
-            assetId,
-            status,
-            "aspectRatio": data.aspect_ratio,
-            "duration": data.duration
-          }
-        },
-        image,
+        media {
+          mediaType,
+          video {
+            asset->{
+              playbackId,
+              assetId,
+              status,
+              "aspectRatio": data.aspect_ratio,
+              "duration": data.duration
+            }
+          },
+          image,
+          alt
+        }
       },
       accentColor,
       description,
@@ -53,21 +56,24 @@ export async function loader({ params }: Route.LoaderArgs) {
         gridColumnStart,
         gridColumnSpan,
         gridRowStart,
-        gridRowSpan,
-        _type == "imageGridBlock" => {
-          image,
-          caption,
-        },
-        _type == "videoGridBlock" => {
-          url,
-          caption
-        },
-        _type == "audioGridBlock" => {
-          url,
-          caption
+        _type == "mediaGridBlock" => {
+          media {
+            mediaType,
+            image,
+            alt,
+            video {
+              asset->{
+                playbackId,
+                assetId,
+                status,
+                "aspectRatio": data.aspect_ratio,
+                "duration": data.duration
+              }
+            }
+          }
         },
         _type == "richTextGridBlock" => {
-          content
+          body
         }
       }
     }

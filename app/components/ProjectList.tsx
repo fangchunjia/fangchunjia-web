@@ -38,7 +38,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
         return (
           <li
             key={p.slug.current}
-            className="grid grid-cols-12 gap-4 group text-accent"
+            className="grid grid-cols-12 gap-4 text-accent"
           >
             <div className="col-start-1 col-span-2 font-medium text-sm">
               {isFirstOfCategory ? `(${p.category.title})` : ""}
@@ -73,7 +73,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                   className="flex gap-2 font-medium mb-0 py-0 text-md"
                 >
                   <div className="w-fit">
-                    <span className="block px-1 -ml-1 leading-[22px] ">
+                    <span className="block px-1 -ml-1 leading-[24px] ">
                       {p.title}
                     </span>
                   </div>

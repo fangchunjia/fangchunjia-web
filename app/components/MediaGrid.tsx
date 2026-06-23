@@ -1,31 +1,30 @@
 // import { combineMedia } from "../utils/combineMedia";
+import type { MediaGridBlock } from "~/types/sanity.types";
 import MediaRenderer from "./MediaRenderer";
-import { useEffect } from "react";
-import { urlFor } from "~/lib/sanity";
 
-function MediaWrapper({ media }: { media: any }) {
-  // console.log(media);
-  // console.log(media);
+function MediaWrapper({ mediaGridBlock }: { mediaGridBlock: MediaGridBlock }) {
   return (
     <div
       style={{
-        gridColumn: media.gridColumnStart + " / span " + media.gridColumnSpan,
+        gridColumn:
+          mediaGridBlock.gridColumnStart +
+          " / span " +
+          mediaGridBlock.gridColumnSpan,
+        gridRow: mediaGridBlock.gridRowStart,
       }}
     >
-      {/* <MediaRenderer media={media} /> */}
-      <img src={urlFor(media.image.asset._ref).url()} />
+      <MediaRenderer media={mediaGridBlock.media} objectFit="cover" />
     </div>
   );
 }
 
-export default function MediaGrid({ grid }: { grid: any[] }) {
+export default function MediaGrid({ grid }: { grid: MediaGridBlock[] }) {
   return (
     <div className="grid grid-cols-12 gap-4">
       {grid &&
-        grid.map((m) => <MediaWrapper media={m} key={m.image?.asset._ref} />)}
-      {/* {combineMedia(media, mediaLayout).map((m) => (
-        <MediaWrapper media={m} key={m.key} />
-      ))} */}
+        grid.map((m) => (
+          <MediaWrapper mediaGridBlock={m} key={m.media?._type} />
+        ))}
     </div>
   );
 }
