@@ -80,8 +80,8 @@ export default function ProjectsLayout() {
       const halfH = r.height / 2;
       const relX = clamp(e.clientX - cx, -halfW, halfW);
       const relY = clamp(e.clientY - cy, -halfH, halfH);
-      const offsetX = -relX * DRIFT;
-      const offsetY = -relY * DRIFT;
+      const offsetX = relX * 0.05;
+      const offsetY = relY * DRIFT;
       // Title shadow: centered on the hovered title + drift.
       titleX.set(cx + offsetX);
       titleY.set(cy + offsetY);
@@ -159,13 +159,13 @@ export default function ProjectsLayout() {
         {onScreenProject && (
           <motion.div
             key="project-title"
-            initial={{ filter: "blur(2px)" }}
-            animate={{
-              filter: isDetailPage ? "blur(0px)" : "blur(2px)",
-              opacity: isDetailPage ? 1 : 0.8,
-              transition: { duration: 1 },
-            }}
-            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            // initial={{ filter: "blur(2px)" }}
+            // animate={{
+            //   filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            //   opacity: isDetailPage ? 1 : 0.8,
+            //   transition: { duration: 1 },
+            // }}
+            // exit={{ opacity: 0, transition: { duration: 0.4 } }}
             style={{
               x: titleX,
               y: titleY,
@@ -174,7 +174,10 @@ export default function ProjectsLayout() {
             }}
             className="font-medium fixed top-0 left-0 text-accent pointer-events-none"
           >
-            <div className="-translate-x-1/2 -translate-y-1/2">
+            <div className="-translate-x-1/2 -translate-y-1/2 flex items-center">
+              <div className="p-1">
+                <div className="mr-1 w-1 h-1 rounded-full bg-accent shadow-[0_0_4px_var(--color-accent)] shadow-accent/50" />
+              </div>
               <h1 className="text-lg leading-[22px]">
                 {onScreenProject.title}
               </h1>
@@ -184,13 +187,13 @@ export default function ProjectsLayout() {
         {onScreenProject && (
           <motion.div
             key="project-subtitle"
-            initial={{ filter: "blur(2px)" }}
-            animate={{
-              filter: isDetailPage ? "blur(0px)" : "blur(2px)",
-              opacity: isDetailPage ? 1 : 0.8,
-              transition: { duration: 1 },
-            }}
-            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            // initial={{ filter: "blur(2px)" }}
+            // animate={{
+            //   filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            //   opacity: isDetailPage ? 1 : 0.8,
+            //   transition: { duration: 1 },
+            // }}
+            // exit={{ opacity: 0, transition: { duration: 0.4 } }}
             style={{
               x: subX,
               y: subY,

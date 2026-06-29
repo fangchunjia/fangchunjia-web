@@ -44,7 +44,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
               {isFirstOfCategory ? `(${p.category.title})` : ""}
             </div>
             <div
-              className="relative w-fit col-span-6"
+              className="relative w-fit col-span-6 peer/title hover:opacity-0"
               onMouseEnter={(e) => {
                 $hoveredProject.set(p);
                 $hoveredEl.set(e.currentTarget);
@@ -73,15 +73,15 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                   className="flex gap-2 font-medium mb-0 py-0 text-md"
                 >
                   <div className="w-fit">
-                    <span className="block px-1 -ml-1 leading-[24px] ">
+                    <span className="block px-1 -ml-1 leading-[24px]">
                       {p.title}
                     </span>
                   </div>
                 </div>
               </Link>
             </div>
-            <div className="col-start-9 col-span-4 font-medium text-sm w-full">
-              <div className="w-fit ml-auto" data-subtitle>
+            <div className="col-start-9 col-span-4 font-medium text-sm w-full peer-hover/title:opacity-0">
+              <div className="w-fit ml-auto text-right" data-subtitle>
                 {p.subtitle}
               </div>
             </div>

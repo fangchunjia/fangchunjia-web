@@ -50,7 +50,7 @@ function NavItem({ item, distance }: { item: NavItem; distance: number }) {
       }}
       animate={{
         filter: `blur(${distance}px)`,
-        opacity: distance === 0 ? 1 : 0.8,
+        opacity: 1 - 0.2 * distance,
       }}
       transition={{ duration: 0.4 }}
     >
