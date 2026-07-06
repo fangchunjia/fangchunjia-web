@@ -128,7 +128,7 @@ export default function ProjectDetail() {
       >
         <section className="grid grid-cols-12 absolute inset-0 p-4 gap-4">
           <div className=" col-start-5 col-span-4 flex flex-col justify-end gap-4 text-accent">
-            <motion.div
+            {/* <motion.div
               className="flex flex-col gap-2 p-2"
               initial={{
                 opacity: 0,
@@ -151,9 +151,6 @@ export default function ProjectDetail() {
                 className="flex flex-col gap-2"
               >
                 <div className="text-sm font-medium">
-                  {/* {project.subtitle && (
-                    <div className="mb-2">{project.subtitle}</div>
-                  )} */}
                   {project.description && (
                     <div className="leading-[16px]">
                       <PortableText value={project.description} />
@@ -164,7 +161,7 @@ export default function ProjectDetail() {
               {project.grid?.length && (
                 <div className="text-xs font-medium">(scroll down)</div>
               )}
-            </motion.div>
+            </motion.div> */}
           </div>
         </section>
       </motion.div>
