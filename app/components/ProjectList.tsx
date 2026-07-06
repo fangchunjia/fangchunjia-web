@@ -8,12 +8,22 @@ import {
 } from "~/stores/ui";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
 import applyAccentColor from "~/utils/applyAccentColor";
+import { useStore } from "@nanostores/react";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+  type AnimationPlaybackControls,
+} from "motion/react";
 
 export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
 
   const projectListItemRefs = useRef<Map<string, HTMLElement>>(new Map());
-  const DEFAULT_ACCENT_COLOR = "#000";
+  const DEFAULT_ACCENT_COLOR = "#111";
 
   const handleProjectClick = (p: ProjectInfo) => {
     $activeProject.set(p);
@@ -30,64 +40,146 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
     applyAccentColor(DEFAULT_ACCENT_COLOR);
   }, []);
 
+  const hoveredProject = useStore($hoveredProject);
+
   return (
     <ul className="relative">
       {projects.map((p, i) => {
         const isFirstOfCategory =
           i === 0 || projects[i - 1].category.title !== p.category.title;
         return (
-          <li
-            key={p.slug.current}
-            className="grid grid-cols-12 gap-4 text-accent"
-          >
+          <li key={p.slug.current} className="grid grid-cols-12 gap-4">
             <div className="col-start-1 col-span-2 font-medium text-sm">
               {isFirstOfCategory ? `(${p.category.title})` : ""}
             </div>
-            <div
-              className="relative w-fit col-span-6 peer/title hover:opacity-0"
-              onMouseEnter={(e) => {
-                $hoveredProject.set(p);
-                $hoveredEl.set(e.currentTarget);
-                applyAccentColor(p.accentColor.hex || null);
-              }}
-              onMouseLeave={(e) => {
-                // When moving between adjacent items the next item's mouseenter
-                // can fire before this leave; guard so a stale leave doesn't
-                // clobber the hover that already took over.
-                if ($hoveredEl.get() !== e.currentTarget) return;
-                $hoveredProject.set(null);
-                $hoveredEl.set(null);
-                applyAccentColor(committed.current);
-              }}
+            <Link
+              to={`/projects/${p.slug.current}`}
+              viewTransition
+              className="cursor-pointer h-full col-span-10 grid grid-cols-subgrid relative group"
+              onClick={() => handleProjectClick(p)}
             >
-              <Link
-                to={`/projects/${p.slug.current}`}
-                viewTransition
-                className="cursor-pointer h-full w-fit block relative z-10"
-                onClick={() => handleProjectClick(p)}
+              <div
+                className="relative w-fit col-span-6"
+                onMouseEnter={(e) => {
+                  $hoveredProject.set(p);
+                  $hoveredEl.set(e.currentTarget);
+                  applyAccentColor(p.accentColor.hex || null);
+                }}
+                onMouseLeave={(e) => {
+                  // When moving between adjacent items the next item's mouseenter
+                  // can fire before this leave; guard so a stale leave doesn't
+                  // clobber the hover that already took over.
+                  if ($hoveredEl.get() !== e.currentTarget) return;
+                  $hoveredProject.set(null);
+                  $hoveredEl.set(null);
+                  applyAccentColor(committed.current);
+                }}
               >
+                <AnimatePresence>
+                  {hoveredProject?._id === p._id && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="px-[4px] h-6 absolute right-full flex"
+                    >
+                      <div className="m-auto text-[12px]">★</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <div
                   ref={(el) => {
                     if (el) projectListItemRefs.current.set(p.title, el);
                   }}
-                  className="flex gap-2 font-medium mb-0 py-0 text-md"
+                  className="flex gap-2 font-medium text-md mb-0 py-0"
                 >
                   <div className="w-fit">
-                    <span className="block px-1 -ml-1 leading-[24px]">
-                      {p.title}
-                    </span>
+                    <ProjectTitle
+                      title={p.title}
+                      accentColor={p.accentColor?.hex || DEFAULT_ACCENT_COLOR}
+                    />
                   </div>
                 </div>
-              </Link>
-            </div>
-            <div className="col-start-9 col-span-4 font-medium text-sm w-full peer-hover/title:opacity-0">
-              <div className="w-fit ml-auto text-right" data-subtitle>
-                {p.subtitle}
               </div>
-            </div>
+              <div className="col-span-4 font-medium w-full">
+                <div className="w-fit ml-auto text-right text-sm" data-subtitle>
+                  {p.subtitle}
+                </div>
+              </div>
+            </Link>
           </li>
         );
       })}
     </ul>
   );
+}
+
+function ProjectTitle({
+  title,
+  accentColor,
+}: {
+  title: string;
+  accentColor: string;
+}) {
+  // Cursor-driven shadow offset (raw), sprung for a gentle follow lag.
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const springX = useSpring(rawX, { stiffness: 150, damping: 20, mass: 0.5 });
+  const springY = useSpring(rawY, { stiffness: 150, damping: 20, mass: 0.5 });
+  // Shadow opacity; starts at 0 so the (blurred) shadow is fully hidden until
+  // hovered, then faded back to 0 on leave. Colour comes from the project's
+  // accent hex, split into rgb so the alpha can be animated.
+  const alpha = useMotionValue(0);
+  const { r, g, b } = hexToRgb(accentColor);
+  // const { r, g, b } = { r: 255, g: 0, b: 143 };
+  const textShadow = useMotionTemplate`${springX}px ${springY}px 2px rgba(255,0,143,${alpha})`;
+  // Origin the offsets are measured from, captured on enter.
+  const origin = useRef<{ x: number; y: number } | null>(null);
+  // The delayed fade-in doubles as the debounce: alpha only rises after 200ms,
+  // so a quick enter/leave stops it before it starts and the shadow stays hidden.
+  const reveal = useRef<AnimationPlaybackControls | null>(null);
+
+  useEffect(() => () => reveal.current?.stop(), []);
+
+  return (
+    <motion.span
+      style={{ textShadow }}
+      className="block px-1 -ml-1 leading-[24px]"
+      onMouseEnter={(e) => {
+        origin.current = { x: e.clientX, y: e.clientY };
+        rawX.set(0);
+        rawY.set(0);
+        alpha.set(0);
+        reveal.current = animate(alpha, 0.4, { delay: 0.2, duration: 0.15 });
+      }}
+      onMouseMove={(e) => {
+        if (!origin.current) return;
+        rawX.set((e.clientX - origin.current.x) * 0.1);
+        rawY.set((e.clientY - origin.current.y) * 0.1);
+      }}
+      onMouseLeave={() => {
+        origin.current = null;
+        reveal.current?.stop();
+        animate(alpha, 0, { duration: 2.4, ease: "easeOut" });
+      }}
+    >
+      {title}
+    </motion.span>
+  );
+}
+
+// Parse a 3- or 6-digit hex colour into rgb components; falls back to black so a
+// missing/invalid accent still yields a usable shadow.
+function hexToRgb(hex: string) {
+  let h = hex.replace("#", "").trim();
+  if (h.length === 3) {
+    h = h
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+  const int = parseInt(h, 16);
+  if (h.length !== 6 || Number.isNaN(int)) return { r: 0, g: 0, b: 0 };
+  return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
 }

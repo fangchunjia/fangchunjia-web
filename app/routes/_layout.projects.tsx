@@ -80,8 +80,8 @@ export default function ProjectsLayout() {
       const halfH = r.height / 2;
       const relX = clamp(e.clientX - cx, -halfW, halfW);
       const relY = clamp(e.clientY - cy, -halfH, halfH);
-      const offsetX = relX * 0.05;
-      const offsetY = relY * DRIFT;
+      const offsetX = Math.min(relX * 0.05, 8);
+      const offsetY = Math.min(relY * 0.05, 8);
       // Title shadow: centered on the hovered title + drift.
       titleX.set(cx + offsetX);
       titleY.set(cy + offsetY);
@@ -155,13 +155,13 @@ export default function ProjectsLayout() {
           />
         </motion.div>
       </div>
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {onScreenProject && (
           <motion.div
             key="project-title"
-            // initial={{ filter: "blur(2px)" }}
+            // initial={{ filter: "blur(4px)" }}
             // animate={{
-            //   filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            //   filter: isDetailPage ? "blur(0px)" : "blur(4px)",
             //   opacity: isDetailPage ? 1 : 0.8,
             //   transition: { duration: 1 },
             // }}
@@ -172,13 +172,13 @@ export default function ProjectsLayout() {
               viewTransitionName: "project-title",
               zIndex: isDetailPage ? 1000 : 10,
             }}
-            className="font-medium fixed top-0 left-0 text-accent pointer-events-none"
+            className="font-medium fixed top-0 left-0 pointer-events-none opacity-25"
           >
             <div className="-translate-x-1/2 -translate-y-1/2 flex items-center">
               <div className="p-1">
-                <div className="mr-1 w-1 h-1 rounded-full bg-accent shadow-[0_0_4px_var(--color-accent)] shadow-accent/50" />
+                <div className="mr-1 w-1 h-1 rounded-full bg-black shadow-[0_0_4px_var(--color-black)] shadow-accent/50" />
               </div>
-              <h1 className="text-lg leading-[22px]">
+              <h1 className="text-md leading-[24px] text-black">
                 {onScreenProject.title}
               </h1>
             </div>
@@ -187,9 +187,9 @@ export default function ProjectsLayout() {
         {onScreenProject && (
           <motion.div
             key="project-subtitle"
-            // initial={{ filter: "blur(2px)" }}
+            // initial={{ filter: "blur(4px)" }}
             // animate={{
-            //   filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            //   filter: isDetailPage ? "blur(0px)" : "blur(4px)",
             //   opacity: isDetailPage ? 1 : 0.8,
             //   transition: { duration: 1 },
             // }}
@@ -221,7 +221,7 @@ export default function ProjectsLayout() {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
       <div
         className="relative z-20"
         style={{
