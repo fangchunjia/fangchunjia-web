@@ -15,9 +15,9 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useSpring,
   type AnimationPlaybackControls,
 } from "motion/react";
+import useCursorDrift from "~/hooks/useCursorDrift";
 
 export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
@@ -122,17 +122,15 @@ function ProjectTitle({
   title: string;
   accentColor: string;
 }) {
-  // Cursor-driven shadow offset (raw), sprung for a gentle follow lag.
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const springX = useSpring(rawX, { stiffness: 150, damping: 20, mass: 0.5 });
-  const springY = useSpring(rawY, { stiffness: 150, damping: 20, mass: 0.5 });
+  // Per-item cursor-driven shadow offset, sprung for a gentle follow lag. Kept
+  // local (its own instance, not the layout's) so the offset freezes on leave and
+  // a fading-out title doesn't keep tracking the cursor.
+  const { x: springX, y: springY, setFromCursor, reset } = useCursorDrift();
   // Shadow opacity; starts at 0 so the (blurred) shadow is fully hidden until
   // hovered, then faded back to 0 on leave. Colour comes from the project's
   // accent hex, split into rgb so the alpha can be animated.
   const alpha = useMotionValue(0);
   const { r, g, b } = hexToRgb(accentColor);
-  // const { r, g, b } = { r: 255, g: 0, b: 143 };
   const textShadow = useMotionTemplate`${springX}px ${springY}px 2px rgba(255,0,143,${alpha})`;
   // Origin the offsets are measured from, captured on enter.
   const origin = useRef<{ x: number; y: number } | null>(null);
@@ -148,17 +146,17 @@ function ProjectTitle({
       className="block px-1 -ml-1 leading-[24px]"
       onMouseEnter={(e) => {
         origin.current = { x: e.clientX, y: e.clientY };
-        rawX.set(0);
-        rawY.set(0);
+        reset();
         alpha.set(0);
         reveal.current = animate(alpha, 0.4, { delay: 0.2, duration: 0.15 });
       }}
       onMouseMove={(e) => {
         if (!origin.current) return;
-        rawX.set((e.clientX - origin.current.x) * 0.1);
-        rawY.set((e.clientY - origin.current.y) * 0.1);
+        setFromCursor({ x: e.clientX, y: e.clientY }, origin.current);
       }}
       onMouseLeave={() => {
+        // Clear origin so onMouseMove stops updating — the offset freezes at its
+        // last value while the shadow fades out (no cursor tracking during fade).
         origin.current = null;
         reveal.current?.stop();
         animate(alpha, 0, { duration: 2.4, ease: "easeOut" });
