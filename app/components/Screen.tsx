@@ -49,7 +49,15 @@ export default function Screen({
               animate={{
                 clipPath: isDetailPage ? "inset(0px)" : `inset(${BLEED}px)`,
               }}
-              transition={{ duration: 0.4 }}
+              // Overdamped spring: decelerates and settles into place with zero
+              // overshoot (no bounce / ease-out-back) — soft, stable, and slow.
+              // Delay only when collapsing back (detail → list), not when expanding.
+              transition={{
+                type: "spring",
+                bounce: 0,
+                duration: 1.6,
+                delay: isDetailPage ? 0 : 0.4,
+              }}
             >
               <MediaOffset offsetX={offsetX} offsetY={offsetY}>
                 <MediaRenderer
