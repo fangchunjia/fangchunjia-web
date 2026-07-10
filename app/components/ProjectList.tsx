@@ -23,7 +23,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
 
   const projectListItemRefs = useRef<Map<string, HTMLElement>>(new Map());
-  const DEFAULT_ACCENT_COLOR = "#111";
+  const DEFAULT_ACCENT_COLOR = "#000";
 
   const handleProjectClick = (p: ProjectInfo) => {
     $activeProject.set(p);
@@ -48,13 +48,15 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
         const isFirstOfCategory =
           i === 0 || projects[i - 1].category.title !== p.category.title;
         return (
-          <li key={p.slug.current} className="grid grid-cols-12 gap-4">
+          <li
+            key={p.slug.current}
+            className="grid grid-cols-12 gap-4 text-accent"
+          >
             <div className="col-start-1 col-span-2 font-medium text-sm">
               {isFirstOfCategory ? `(${p.category.title})` : ""}
             </div>
             <Link
               to={`/projects/${p.slug.current}`}
-              viewTransition
               className="cursor-pointer h-full col-span-10 grid grid-cols-subgrid relative group"
               onClick={() => handleProjectClick(p)}
             >
@@ -95,16 +97,8 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                   className="flex gap-2 font-medium text-md mb-0 py-0"
                 >
                   <div className="w-fit">
-                    <ProjectTitle
-                      title={p.title}
-                      accentColor={p.accentColor?.hex || DEFAULT_ACCENT_COLOR}
-                    />
+                    <ProjectListTitle title={p.title} />
                   </div>
-                </div>
-              </div>
-              <div className="col-span-4 font-medium w-full">
-                <div className="w-fit ml-auto text-right text-sm" data-subtitle>
-                  {p.subtitle}
                 </div>
               </div>
             </Link>
@@ -115,23 +109,17 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   );
 }
 
-function ProjectTitle({
-  title,
-  accentColor,
-}: {
-  title: string;
-  accentColor: string;
-}) {
+function ProjectListTitle({ title }: { title: string }) {
   // Per-item cursor-driven shadow offset, sprung for a gentle follow lag. Kept
   // local (its own instance, not the layout's) so the offset freezes on leave and
   // a fading-out title doesn't keep tracking the cursor.
   const { x: springX, y: springY, setFromCursor, reset } = useCursorDrift();
   // Shadow opacity; starts at 0 so the (blurred) shadow is fully hidden until
-  // hovered, then faded back to 0 on leave. Colour comes from the project's
-  // accent hex, split into rgb so the alpha can be animated.
+  // hovered, then faded back to 0 on leave. The colour follows the LIVE
+  // var(--color-accent) (relative-color syntax sets its alpha from the animated
+  // value), so even a fading-out shadow tracks the current accent, not a baked hex.
   const alpha = useMotionValue(0);
-  const { r, g, b } = hexToRgb(accentColor);
-  const textShadow = useMotionTemplate`${springX}px ${springY}px 2px rgba(255,0,143,${alpha})`;
+  const textShadow = useMotionTemplate`${springX}px ${springY}px 2px rgb(from var(--color-accent) r g b / ${alpha})`;
   // Origin the offsets are measured from, captured on enter.
   const origin = useRef<{ x: number; y: number } | null>(null);
   // The delayed fade-in doubles as the debounce: alpha only rises after 200ms,
@@ -165,19 +153,4 @@ function ProjectTitle({
       {title}
     </motion.span>
   );
-}
-
-// Parse a 3- or 6-digit hex colour into rgb components; falls back to black so a
-// missing/invalid accent still yields a usable shadow.
-function hexToRgb(hex: string) {
-  let h = hex.replace("#", "").trim();
-  if (h.length === 3) {
-    h = h
-      .split("")
-      .map((c) => c + c)
-      .join("");
-  }
-  const int = parseInt(h, 16);
-  if (h.length !== 6 || Number.isNaN(int)) return { r: 0, g: 0, b: 0 };
-  return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
 }

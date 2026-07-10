@@ -31,20 +31,19 @@ export default function Screen({
         {item && (
           <motion.div
             key={item.slug.current}
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Bleed window: clips BLEED px per side on the list, opens fully on
-                the detail page — the media itself keeps the same scale. */}
+            {/* Bleed window: the media-box extends BLEED px beyond the viewport on
+                every side, so clipping BLEED px on the list still fills the screen
+                edge-to-edge (no empty border). On the detail page (inset 0) the media
+                bleeds BLEED px past the viewport, clipped by the gallery wrapper. */}
             <motion.div
-              className={
-                item.cover.fullscreen
-                  ? "w-full h-full overflow-hidden"
-                  : "w-[calc((100%_-_208px)/3_+_48px)] flex overflow-hidden"
-              }
+              className="absolute overflow-hidden"
+              style={{ top: -BLEED, left: -BLEED, right: -BLEED, bottom: -BLEED }}
               initial={false}
               animate={{
                 clipPath: isDetailPage ? "inset(0px)" : `inset(${BLEED}px)`,
@@ -60,10 +59,7 @@ export default function Screen({
               }}
             >
               <MediaOffset offsetX={offsetX} offsetY={offsetY}>
-                <MediaRenderer
-                  media={item.cover.media}
-                  objectFit={item.cover.fullscreen ? "cover" : "contain"}
-                />
+                <MediaRenderer media={item.cover.media} objectFit="cover" />
               </MediaOffset>
             </motion.div>
           </motion.div>

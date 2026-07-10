@@ -1,15 +1,17 @@
 import { useEffect, useRef } from "react";
-import { Outlet, useLocation, useMatches } from "react-router";
+import { useLocation, useMatches } from "react-router";
 import { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
+  $activePos,
   $activeProject,
   $hoveredEl,
   $hoveredProject,
   $scrollY,
 } from "~/stores/ui";
 import useCursorDrift from "~/hooks/useCursorDrift";
+import AnimatedOutlet from "~/components/AnimatedOutlet";
 import Screen from "~/components/Screen";
 
 // Media bleed (px): the image overhangs the visible window by this much per side
@@ -24,20 +26,23 @@ export default function ProjectsLayout() {
   );
   const { pathname } = useLocation();
 
-  // Track the (now persistent, layout-owned) Lenis scroll position and reset to
-  // top on every projects navigation. Replaces the per-route ReactLenis
-  // instances and the $slug unmount scrollTo hack.
+  // Track the (now persistent, layout-owned) Lenis scroll position. The reset to
+  // top happens on the outlet's exit-complete (see AnimatedOutlet below), so the
+  // leaving page holds its scroll while it fades and the entering page starts fresh.
   const lenis = useLenis(({ scroll }) => $scrollY.set(scroll));
-  useEffect(() => {
-    lenis?.scrollTo(0, { immediate: true });
-  }, [pathname]);
   const galleryWrapperRef = useRef<HTMLDivElement>(null);
   const hoveredProject = useStore($hoveredProject);
   const activeProject = useStore($activeProject);
+  const activePos = useStore($activePos);
 
   // Single sprung cursor-drift signal (px, capped to ±BLEED) for the <Screen>
   // image offset — same logic as the title shadow, just capped to the bleed.
-  const { x: driftX, y: driftY, setFromCursor, reset } = useCursorDrift({
+  const {
+    x: driftX,
+    y: driftY,
+    setFromCursor,
+    reset,
+  } = useCursorDrift({
     cap: BLEED,
   });
   // Entry point of the current hover, so the drift can mirror the title shadow's
@@ -110,7 +115,6 @@ export default function ProjectsLayout() {
       <div
         ref={galleryWrapperRef}
         className="fixed inset-0 overflow-hidden project-image h-dvh"
-        style={{ viewTransitionName: "gallery-screen" }}
       >
         <motion.div className="w-full h-full">
           <Screen
@@ -125,16 +129,30 @@ export default function ProjectsLayout() {
           />
         </motion.div>
       </div>
-      <div
+      <AnimatedOutlet
+        routeKey={pathname}
         className="relative z-20"
-        style={{
-          viewTransitionName: isDetailPage
-            ? "project-detail"
-            : "project-list-page",
-        }}
-      >
-        <Outlet />
-      </div>
+        onExitComplete={() => lenis?.scrollTo(0, { immediate: true })}
+      />
+      {/* Clicked list title held at its captured position: it stays put while the
+          list fades out and persists onto the detail page. (The back button and
+          subtitle now live on the $slug page, grouped with its description entrance.) */}
+      <AnimatePresence>
+        {activeProject && activePos && (
+          <motion.div
+            key="held-title"
+            initial={false}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{ top: activePos.top, left: activePos.left }}
+            className="fixed z-30 font-medium text-md text-accent whitespace-nowrap pointer-events-none"
+          >
+            <span className="block px-1 -ml-1 leading-[24px]">
+              {activeProject.title}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

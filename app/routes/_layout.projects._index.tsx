@@ -14,7 +14,6 @@ import type {
   MuxVideoAssetReference,
   Project,
 } from "~/types/sanity.types";
-import PageEntrance from "~/components/PageEntrance";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -128,7 +127,7 @@ export default function Projects() {
   });
 
   return (
-    <PageEntrance className="project-list relative">
+    <div className="project-list relative">
       <article>
         <div className="p-4 pt-28">
           <section className="">
@@ -141,6 +140,6 @@ export default function Projects() {
           </section>
         </div>
       </article>
-    </PageEntrance>
+    </div>
   );
 }
