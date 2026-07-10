@@ -6,7 +6,6 @@ export default function Back({ color }: { color?: string }) {
       // TODO
       to={"/projects"}
       relative="path"
-      viewTransition
       className="cursor-pointer transition text-sm font-medium py-1 px-2"
       style={{ color: color }}
     >

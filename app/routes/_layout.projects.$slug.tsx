@@ -1,4 +1,4 @@
-import { useLoaderData, data } from "react-router";
+import { useLoaderData, data, Link } from "react-router";
 import { useEffect } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
@@ -6,12 +6,18 @@ import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import MediaGrid from "~/components/MediaGrid";
 import { PortableText } from "@portabletext/react";
-import { $activeProject, $coverPlayed } from "~/stores/ui";
-import { motion } from "motion/react";
+import { $activePos, $activeProject, $coverPlayed } from "~/stores/ui";
+import { motion, type Variants } from "motion/react";
 import { useStore } from "@nanostores/react";
 import type { Project } from "~/types/sanity.types";
 import applyAccentColor from "~/utils/applyAccentColor";
-import Back from "~/components/Back";
+
+// Shared entrance for the detail overlay UI (back, subtitle, description, scroll
+// hint) so they all fade in together.
+const overlayVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { delay: 1, duration: 0.4 } },
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -91,7 +97,9 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function ProjectDetail() {
   const { project } = useLoaderData<typeof loader>();
   const activeProject = useStore($activeProject);
+  const activePos = useStore($activePos);
   const coverPlayed = useStore($coverPlayed);
+  const overlayState = coverPlayed ? "visible" : "hidden";
 
   useEffect(() => {
     if (!activeProject) {
@@ -115,6 +123,30 @@ export default function ProjectDetail() {
 
   return (
     <article>
+      {/* Back button + subtitle — pinned to the borders at the held title's vertical
+          position, fading in together with the description via overlayVariants. */}
+      {activePos && (
+        <motion.div
+          variants={overlayVariants}
+          initial="hidden"
+          animate={overlayState}
+          style={{ top: activePos.top }}
+          className="fixed left-4 z-30 font-medium text-sm text-accent leading-[24px]"
+        >
+          <Link to="/projects">(back)</Link>
+        </motion.div>
+      )}
+      {activePos && (
+        <motion.div
+          variants={overlayVariants}
+          initial="hidden"
+          animate={overlayState}
+          style={{ top: activePos.top }}
+          className="fixed right-8 z-30 font-medium text-sm text-accent leading-[24px] whitespace-nowrap pointer-events-none"
+        >
+          {project.subtitle}
+        </motion.div>
+      )}
       {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
       <motion.div
         className="w-full relative"
@@ -128,22 +160,11 @@ export default function ProjectDetail() {
       >
         <section className="grid grid-cols-12 absolute inset-0 p-4 gap-4">
           <div className=" col-start-5 col-span-4 flex flex-col justify-end gap-4 text-accent">
-            {/* <motion.div
+            <motion.div
               className="flex flex-col gap-2 p-2"
-              initial={{
-                opacity: 0,
-              }}
-              animate={
-                coverPlayed
-                  ? {
-                      opacity: 1,
-                      transition: {
-                        delay: 1,
-                        duration: 0.4,
-                      },
-                    }
-                  : { opacity: 0 }
-              }
+              variants={overlayVariants}
+              initial="hidden"
+              animate={overlayState}
             >
               <motion.div
                 drag
@@ -161,7 +182,7 @@ export default function ProjectDetail() {
               {project.grid?.length && (
                 <div className="text-xs font-medium">(scroll down)</div>
               )}
-            </motion.div> */}
+            </motion.div>
           </div>
         </section>
       </motion.div>

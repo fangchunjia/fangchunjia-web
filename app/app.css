@@ -115,73 +115,7 @@ h2 {
   @apply font-semibold leading-[20px];
 }
 
-@keyframes fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-/* Root contains only the Screen background — keep it static, no crossfade */
-::view-transition-old(root) {
-  animation: none;
-  display: none;
-}
-
-::view-transition-new(root) {
-  animation: none;
-}
-
-/* Route content fades between pages, painting ABOVE gallery-screen so the old
-   content fades out to reveal the cover beneath it. The list and detail routes
-   use DISTINCT names (set in _layout.projects.tsx) so the browser never pairs
-   them into one morphing group — each snapshot is positioned at its own
-   document-scroll offset and fades in place, independent of the other page's
-   scroll position (no manual offset needed). */
-::view-transition-old(project-detail),
-::view-transition-old(project-list-page) {
-  animation: fade-out 0.4s ease-out both;
-}
-
-::view-transition-new(project-detail),
-::view-transition-new(project-list-page) {
-  opacity: 0;
-}
-
-/* Screen background — persistent, no animation, old hidden to avoid double-rendering */
-::view-transition-group(gallery-screen),
-::view-transition-old(gallery-screen),
-::view-transition-new(gallery-screen) {
-  animation: none;
-}
-
-::view-transition-old(gallery-screen) {
-  display: none;
-}
-
-/* Persistent layout elements: own layers, no animation, old hidden to avoid double-rendering */
-::view-transition-group(site-header),
-::view-transition-old(site-header),
-::view-transition-new(site-header),
-::view-transition-group(site-quote),
-::view-transition-old(site-quote),
-::view-transition-new(site-quote),
-::view-transition-group(project-title),
-::view-transition-old(project-title),
-::view-transition-new(project-title) {
-  animation: none;
-}
-
-::view-transition-old(site-header),
-::view-transition-old(site-quote),
-::view-transition-old(project-title) {
-  display: none;
-}
+/* Page transitions are Motion-owned (AnimatedOutlet); no browser View Transitions. */
 
 .x {
   background: #e8e9ed;
