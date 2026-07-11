@@ -129,9 +129,9 @@ export default function Projects() {
   return (
     <div className="project-list relative">
       <article>
-        <div className="p-4 pt-28">
+        <div className="pl-[208px] pr-8 pt-20">
           <section className="">
-            <div className="pl-4 pr-8">
+            <div className="">
               <ProjectList projects={projects} />
               {/* <ProjectList projects={projects} />
               <ProjectList projects={projects} />

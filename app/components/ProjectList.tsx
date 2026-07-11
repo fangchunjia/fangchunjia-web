@@ -43,18 +43,12 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const hoveredProject = useStore($hoveredProject);
 
   return (
-    <ul className="relative">
+    <ul className="relative flex flex-col">
       {projects.map((p, i) => {
         const isFirstOfCategory =
           i === 0 || projects[i - 1].category.title !== p.category.title;
         return (
-          <li
-            key={p.slug.current}
-            className="grid grid-cols-12 gap-4 text-accent"
-          >
-            <div className="col-start-1 col-span-2 font-medium text-sm">
-              {isFirstOfCategory ? `(${p.category.title})` : ""}
-            </div>
+          <li key={p.slug.current} className="">
             <Link
               to={`/projects/${p.slug.current}`}
               className="cursor-pointer h-full col-span-10 grid grid-cols-subgrid relative group"
@@ -85,7 +79,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                       exit={{ opacity: 0 }}
                       className="px-[4px] h-6 absolute right-full flex"
                     >
-                      <div className="m-auto text-[12px]">★</div>
+                      <div className="m-auto text-[14px]">★</div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -119,7 +113,7 @@ function ProjectListTitle({ title }: { title: string }) {
   // var(--color-accent) (relative-color syntax sets its alpha from the animated
   // value), so even a fading-out shadow tracks the current accent, not a baked hex.
   const alpha = useMotionValue(0);
-  const textShadow = useMotionTemplate`${springX}px ${springY}px 2px rgb(from var(--color-accent) r g b / ${alpha})`;
+  const textShadow = useMotionTemplate`${springX}px ${springY}px 2px rgb(from var(--color-fangchunjia-pink) r g b / ${alpha})`;
   // Origin the offsets are measured from, captured on enter.
   const origin = useRef<{ x: number; y: number } | null>(null);
   // The delayed fade-in doubles as the debounce: alpha only rises after 200ms,
@@ -131,7 +125,7 @@ function ProjectListTitle({ title }: { title: string }) {
   return (
     <motion.span
       style={{ textShadow }}
-      className="block px-1 -ml-1 leading-[24px]"
+      className="block px-1 -ml-1 text-[20px] leading-[26px]"
       onMouseEnter={(e) => {
         origin.current = { x: e.clientX, y: e.clientY };
         reset();

@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import type { ComponentType } from "react";
-import { NavLink, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import HomeGraphic from "~/assets/graphics/home.svg?react";
 import AboutGraphic from "~/assets/graphics/about.svg?react";
 import ProjectsGraphic from "~/assets/graphics/projects.svg?react";
@@ -15,6 +15,13 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
+    title: "Projects",
+    to: "/projects",
+    Graphic: ProjectsGraphic,
+    parentClassName: "pl-2 pt-1 pr-1 pb-1",
+    graphicClassName: "*:fill-accent",
+  },
+  {
     title: "Home",
     to: "/",
     Graphic: HomeGraphic,
@@ -25,13 +32,6 @@ const navItems: NavItem[] = [
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
-    parentClassName: "pl-2 pt-1 pr-1 pb-1",
-    graphicClassName: "*:fill-accent",
-  },
-  {
-    title: "Projects",
-    to: "/projects",
-    Graphic: ProjectsGraphic,
     parentClassName: "pl-2 pt-1 pr-1 pb-1",
     graphicClassName: "*:fill-accent",
   },
@@ -76,8 +76,16 @@ export default function Nav() {
       : location.pathname.startsWith(e.to),
   );
 
+  // Show a back link when the current path is a child of any non-root nav item
+  // (e.g. "/projects/foo"), but not on the nav item roots themselves. The back
+  // link points at the parent path (the segment above the current one).
+  const showBack = navItems.some(
+    (e) => e.to !== "/" && location.pathname.startsWith(`${e.to}/`),
+  );
+  const parentPath = location.pathname.replace(/\/[^/]+\/?$/, "") || "/";
+
   return (
-    <div className="w-96 flex">
+    <div className="w-96 flex relative">
       {navItems.map((item, index) => (
         <NavItem
           key={item.to}
@@ -85,6 +93,13 @@ export default function Nav() {
           distance={Math.abs(activeIndex - index)}
         />
       ))}
+      {showBack && (
+        <div className="absolute top-0 left-[224px] text-sm">
+          <Link to={parentPath} aria-label="Back">
+            Back
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
