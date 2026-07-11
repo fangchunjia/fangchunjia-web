@@ -31,7 +31,7 @@ export default function Screen({
         {item && (
           <motion.div
             key={item.slug.current}
-            className="absolute inset-0"
+            className="absolute inset-0 top-[96px] left-[224px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -43,7 +43,12 @@ export default function Screen({
                 bleeds BLEED px past the viewport, clipped by the gallery wrapper. */}
             <motion.div
               className="absolute overflow-hidden"
-              style={{ top: -BLEED, left: -BLEED, right: -BLEED, bottom: -BLEED }}
+              style={{
+                top: -BLEED,
+                left: -BLEED,
+                right: -BLEED,
+                bottom: -BLEED,
+              }}
               initial={false}
               animate={{
                 clipPath: isDetailPage ? "inset(0px)" : `inset(${BLEED}px)`,
@@ -59,7 +64,11 @@ export default function Screen({
               }}
             >
               <MediaOffset offsetX={offsetX} offsetY={offsetY}>
-                <MediaRenderer media={item.cover.media} objectFit="cover" />
+                <MediaRenderer
+                  media={item.cover.media}
+                  objectFit="contain"
+                  objectPosition="right bottom"
+                />
               </MediaOffset>
             </motion.div>
           </motion.div>

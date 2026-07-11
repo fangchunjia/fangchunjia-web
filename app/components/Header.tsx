@@ -7,7 +7,7 @@ export default function Header({
   onClickBranding: Function;
 }) {
   return (
-    <div className="fixed z-300 flex inset-x-0 h-28">
+    <div className="fixed z-300 flex inset-x-0 h-20">
       <div
         className="h-fit"
         onClick={() => {

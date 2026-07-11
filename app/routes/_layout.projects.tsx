@@ -145,9 +145,9 @@ export default function ProjectsLayout() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
             style={{ top: activePos.top, left: activePos.left }}
-            className="fixed z-30 font-medium text-md text-accent whitespace-nowrap pointer-events-none"
+            className="fixed z-30 font-medium text-[20px] text-accent whitespace-nowrap pointer-events-none"
           >
-            <span className="block px-1 -ml-1 leading-[24px]">
+            <span className="block px-1 -ml-1 leading-[26px]">
               {activeProject.title}
             </span>
           </motion.div>

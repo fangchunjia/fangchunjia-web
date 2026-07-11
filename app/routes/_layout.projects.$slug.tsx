@@ -125,7 +125,7 @@ export default function ProjectDetail() {
     <article>
       {/* Back button + subtitle — pinned to the borders at the held title's vertical
           position, fading in together with the description via overlayVariants. */}
-      {activePos && (
+      {/* {activePos && (
         <motion.div
           variants={overlayVariants}
           initial="hidden"
@@ -135,8 +135,8 @@ export default function ProjectDetail() {
         >
           <Link to="/projects">(back)</Link>
         </motion.div>
-      )}
-      {activePos && (
+      )} */}
+      {/* {activePos && (
         <motion.div
           variants={overlayVariants}
           initial="hidden"
@@ -146,7 +146,7 @@ export default function ProjectDetail() {
         >
           {project.subtitle}
         </motion.div>
-      )}
+      )} */}
       {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
       <motion.div
         className="w-full relative"
@@ -188,7 +188,7 @@ export default function ProjectDetail() {
       </motion.div>
       {/* Images section — follows cover in natural flow */}
       {project.grid?.length && (
-        <section className="py-8 px-4 bg-fangchunjia-gray">
+        <section className="py-8 pl-[208px] bg-fangchunjia-gray">
           <MediaGrid grid={project.grid} />
         </section>
       )}

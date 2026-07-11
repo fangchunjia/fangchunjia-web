@@ -9,6 +9,7 @@ import ProgressBar from "~/components/ProgressBar";
 import AnimatedOutlet from "~/components/AnimatedOutlet";
 import { $coverPlayed } from "~/stores/ui";
 import { useLenisAutoResize } from "~/utils/useLenisAutoResize";
+import Flirt from "~/components/Flirt";
 
 export default function Layout() {
   const [isPurikuraVisible, setIsPurikuraVisible] = useState<boolean>(false);
@@ -20,7 +21,7 @@ export default function Layout() {
       />
       {isPurikuraVisible && <Purikura />}
       <Quote />
-
+      <Flirt />
       <Main />
       <ProgressBar />
     </ReactLenis>
