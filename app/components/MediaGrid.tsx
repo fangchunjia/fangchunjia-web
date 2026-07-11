@@ -13,7 +13,7 @@ function MediaWrapper({ mediaGridBlock }: { mediaGridBlock: MediaGridBlock }) {
         gridRow: mediaGridBlock.gridRowStart,
       }}
     >
-      <MediaRenderer media={mediaGridBlock.media} objectFit="cover" />
+      <MediaRenderer media={mediaGridBlock.media} />
     </div>
   );
 }

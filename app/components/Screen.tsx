@@ -64,11 +64,7 @@ export default function Screen({
               }}
             >
               <MediaOffset offsetX={offsetX} offsetY={offsetY}>
-                <MediaRenderer
-                  media={item.cover.media}
-                  objectFit="contain"
-                  objectPosition="right bottom"
-                />
+                <MediaRenderer media={item.cover.media} />
               </MediaOffset>
             </motion.div>
           </motion.div>
@@ -99,7 +95,10 @@ function MediaOffset({
   const x = useTransform(offsetX ?? zeroX, invertClamp);
   const y = useTransform(offsetY ?? zeroY, invertClamp);
   return (
-    <motion.div className="w-full h-full" style={{ x, y }}>
+    <motion.div
+      className="w-full h-full flex justify-end items-end"
+      style={{ x, y }}
+    >
       {children}
     </motion.div>
   );
