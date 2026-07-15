@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { useLocation } from "react-router";
 import ReactLenis, { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
 import Header from "~/components/Header";
@@ -34,18 +33,12 @@ function Main() {
   const mainRef = useRef<HTMLElement>(null);
   useLenisAutoResize(mainRef);
 
-  const { pathname } = useLocation();
-  // Key the top-level transition on the first path segment so navigations WITHIN a
-  // section (e.g. projects list↔detail, handled by the projects layout's own
-  // AnimatedOutlet) don't also trigger a root-level transition.
-  const topSegment = pathname.split("/")[1] || "home";
   const coverPlayed = useStore($coverPlayed);
   const lenis = useLenis();
 
   return (
     <main ref={mainRef} className="w-full min-h-dvh flex flex-col">
       <AnimatedOutlet
-        routeKey={topSegment}
         gate={coverPlayed}
         className="w-full flex flex-col flex-1"
         onExitComplete={() => lenis?.scrollTo(0, { immediate: true })}

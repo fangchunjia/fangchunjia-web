@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useLocation, useMatches } from "react-router";
+import { useMatches } from "react-router";
 import { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
 import { AnimatePresence, motion } from "motion/react";
@@ -24,8 +24,6 @@ export default function ProjectsLayout() {
   const isDetailPage = matches.some(
     (match) => match.id === "routes/_layout.projects.$slug",
   );
-  const { pathname } = useLocation();
-
   // Track the (now persistent, layout-owned) Lenis scroll position. The reset to
   // top happens on the outlet's exit-complete (see AnimatedOutlet below), so the
   // leaving page holds its scroll while it fades and the entering page starts fresh.
@@ -130,7 +128,6 @@ export default function ProjectsLayout() {
         </motion.div>
       </div>
       <AnimatedOutlet
-        routeKey={pathname}
         className="relative z-20"
         onExitComplete={() => lenis?.scrollTo(0, { immediate: true })}
       />

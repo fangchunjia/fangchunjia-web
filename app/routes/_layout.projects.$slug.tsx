@@ -188,7 +188,7 @@ export default function ProjectDetail() {
       </motion.div>
       {/* Images section — follows cover in natural flow */}
       {project.grid?.length && (
-        <section className="py-8 pl-[208px] bg-fangchunjia-gray">
+        <section className="py-8 pl-space-left bg-fangchunjia-gray">
           <MediaGrid grid={project.grid} />
         </section>
       )}
