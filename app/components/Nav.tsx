@@ -19,21 +19,21 @@ const navItems: NavItem[] = [
     to: "/projects",
     Graphic: ProjectsGraphic,
     parentClassName: "pl-2 pt-1 pr-1 pb-1",
-    graphicClassName: "*:fill-accent",
+    graphicClassName: "*:fill-fangchunjia-black",
   },
   {
     title: "Home",
     to: "/",
     Graphic: HomeGraphic,
     parentClassName: "pl-3 pr-1 pb-1",
-    graphicClassName: "*:fill-accent",
+    graphicClassName: "*:fill-fangchunjia-black",
   },
   {
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
     parentClassName: "pl-2 pt-1 pr-1 pb-1",
-    graphicClassName: "*:fill-accent",
+    graphicClassName: "*:fill-fangchunjia-black",
   },
 ];
 

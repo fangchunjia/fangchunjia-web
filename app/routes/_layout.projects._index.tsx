@@ -106,7 +106,6 @@ export async function loader({}: Route.LoaderArgs) {
 
 export default function Projects() {
   const { projects } = useLoaderData<typeof loader>();
-  console.log(projects);
   useEffect(() => {
     $activeProject.set(null);
     $hoveredProject.set(null);
@@ -129,7 +128,7 @@ export default function Projects() {
   return (
     <div className="project-list relative">
       <article>
-        <div className="pl-[208px] pr-8 pt-20">
+        <div className="pl-space-left pr-8 pt-space-top">
           <section className="">
             <div className="">
               <ProjectList projects={projects} />

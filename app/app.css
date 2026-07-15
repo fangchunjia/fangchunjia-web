@@ -62,6 +62,8 @@
   --media-l-h-max: 160px;
   --media-spacing: 40px;
   --section-top-spacing: 112px;
+  --spacing-space-left: 208px;
+  --spacing-space-top: 80px;
   --cursor-default: url("/cursors/cursor-02.png"), default;
   --cursor-pointer: url("/cursors/cursor-01.png"), pointer;
   --text-shadow-embossed: -1px -1px 0px #d8d8d866, 1px 1px 0px #949494ab;
