@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation } from "react-router";
 import HomeGraphic from "~/assets/graphics/home.svg?react";
 import AboutGraphic from "~/assets/graphics/about.svg?react";
 import ProjectsGraphic from "~/assets/graphics/projects.svg?react";
+import Back from "./Back";
 
 type NavItem = {
   title: string;
@@ -19,21 +20,21 @@ const navItems: NavItem[] = [
     to: "/projects",
     Graphic: ProjectsGraphic,
     parentClassName: "pl-2 pt-1 pr-1 pb-1",
-    graphicClassName: "*:fill-fangchunjia-black",
+    graphicClassName: "*:fill-accent",
   },
   {
     title: "Home",
     to: "/",
     Graphic: HomeGraphic,
     parentClassName: "pl-3 pr-1 pb-1",
-    graphicClassName: "*:fill-fangchunjia-black",
+    graphicClassName: "*:fill-accent",
   },
   {
     title: "About",
     to: "/about",
     Graphic: AboutGraphic,
     parentClassName: "pl-2 pt-1 pr-1 pb-1",
-    graphicClassName: "*:fill-fangchunjia-black",
+    graphicClassName: "*:fill-accent",
   },
 ];
 
@@ -49,10 +50,10 @@ function NavItem({ item, distance }: { item: NavItem; distance: number }) {
         opacity: 0.8,
       }}
       animate={{
-        filter: `blur(${distance}px)`,
-        opacity: 1 - 0.2 * distance,
+        filter: `blur(${distance ? 1 : 0}px)`,
+        opacity: distance ? 0.8 : 1,
       }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0 }}
     >
       <div>
         <NavLink
@@ -95,9 +96,7 @@ export default function Nav() {
       ))}
       {showBack && (
         <div className="absolute top-0 left-[224px] text-sm">
-          <Link to={parentPath} aria-label="Back">
-            Back
-          </Link>
+          <Back />
         </div>
       )}
     </div>

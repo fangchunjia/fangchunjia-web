@@ -2,11 +2,12 @@ import { useEffect, type RefObject } from "react";
 import { useLenis } from "lenis/react";
 
 // Lenis caches its scroll `limit` and only recomputes when its internal
-// ResizeObserver fires. In `root` mode that observer (and any observer on
-// document.body / documentElement) is useless here because app.css pins both
-// html and body to `height: 100dvh` — their boxes never grow. The route's
-// in-flow content (the <article>) is what actually overflows and grows when
-// grid images decode or fonts swap. Observe that element and call
+// ResizeObserver fires. In `root` mode Lenis observes document.documentElement
+// (its default `content`), but a ResizeObserver on the root <html> element is
+// unreliable for content-driven height changes — it often doesn't fire when a
+// descendant grows asynchronously (grid images decoding, fonts swapping), so
+// the cached limit goes stale and the page won't scroll to the true bottom.
+// Observe the route's actual in-flow content (the <article>) instead and call
 // lenis.resize(), which recomputes the limit from documentElement.scrollHeight
 // (correct, since scrollHeight always includes overflowing content).
 export function useLenisAutoResize(ref: RefObject<HTMLElement | null>) {

@@ -1,12 +1,10 @@
 import { useRef, useState } from "react";
-import ReactLenis, { useLenis } from "lenis/react";
-import { useStore } from "@nanostores/react";
+import { Outlet } from "react-router";
+import ReactLenis from "lenis/react";
 import Header from "~/components/Header";
 import Purikura from "~/components/Purikura";
 import Quote from "~/components/Quote";
 import ProgressBar from "~/components/ProgressBar";
-import AnimatedOutlet from "~/components/AnimatedOutlet";
-import { $coverPlayed } from "~/stores/ui";
 import { useLenisAutoResize } from "~/utils/useLenisAutoResize";
 import Flirt from "~/components/Flirt";
 
@@ -27,22 +25,17 @@ export default function Layout() {
   );
 }
 
-// Rendered INSIDE <ReactLenis> so useLenis() (and useLenisAutoResize) resolve the
-// provider — the root Layout component that renders the provider can't read it.
+// Rendered INSIDE <ReactLenis> so useLenisAutoResize resolves the provider — the
+// root Layout component that renders the provider can't read it.
 function Main() {
   const mainRef = useRef<HTMLElement>(null);
   useLenisAutoResize(mainRef);
 
-  const coverPlayed = useStore($coverPlayed);
-  const lenis = useLenis();
-
   return (
     <main ref={mainRef} className="w-full min-h-dvh flex flex-col">
-      <AnimatedOutlet
-        gate={coverPlayed}
-        className="w-full flex flex-col flex-1"
-        onExitComplete={() => lenis?.scrollTo(0, { immediate: true })}
-      />
+      <div className="w-full flex flex-col flex-1">
+        <Outlet />
+      </div>
     </main>
   );
 }

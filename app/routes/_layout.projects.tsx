@@ -1,37 +1,31 @@
 import { useEffect, useRef } from "react";
-import { useMatches } from "react-router";
-import { useLenis } from "lenis/react";
+import { Outlet, useMatches } from "react-router";
 import { useStore } from "@nanostores/react";
-import { AnimatePresence, motion } from "motion/react";
-import {
-  $activePos,
-  $activeProject,
-  $hoveredEl,
-  $hoveredProject,
-  $scrollY,
-} from "~/stores/ui";
+import { AnimatePresence, motion, useMotionValue } from "motion/react";
+import { $activeProject, $hoveredEl, $hoveredProject } from "~/stores/ui";
 import useCursorDrift from "~/hooks/useCursorDrift";
-import AnimatedOutlet from "~/components/AnimatedOutlet";
-import Screen from "~/components/Screen";
 
 // Media bleed (px): the image overhangs the visible window by this much per side
 // on the list page, so the cursor-driven offset can reveal it without exposing an
 // empty edge. Also the ± cap on the drift.
 const BLEED = 8;
 
+// Gap (px) from the cursor to the floating title's top-left corner, so the label
+// sits just off the cursor's bottom-right rather than under the pointer.
+const CURSOR_OFFSET = { x: 12, y: 16 };
+
 export default function ProjectsLayout() {
   const matches = useMatches();
   const isDetailPage = matches.some(
     (match) => match.id === "routes/_layout.projects.$slug",
   );
-  // Track the (now persistent, layout-owned) Lenis scroll position. The reset to
-  // top happens on the outlet's exit-complete (see AnimatedOutlet below), so the
-  // leaving page holds its scroll while it fades and the entering page starts fresh.
-  const lenis = useLenis(({ scroll }) => $scrollY.set(scroll));
-  const galleryWrapperRef = useRef<HTMLDivElement>(null);
   const hoveredProject = useStore($hoveredProject);
   const activeProject = useStore($activeProject);
-  const activePos = useStore($activePos);
+
+  // Position (px, fixed-viewport) of the floating title overlay, driven as a
+  // transform so it can track the cursor at 60fps without re-rendering.
+  const titleX = useMotionValue(0);
+  const titleY = useMotionValue(0);
 
   // Single sprung cursor-drift signal (px, capped to ±BLEED) for the <Screen>
   // image offset — same logic as the title shadow, just capped to the bleed.
@@ -61,6 +55,12 @@ export default function ProjectsLayout() {
     const onMove = (e: MouseEvent) => {
       const el = $hoveredEl.get();
       if (!el || !el.isConnected) return;
+      // Float the title just off the cursor's bottom-right while hovering. Skip
+      // once a project is clicked — the title then holds at its captured spot.
+      if (!$activeProject.get()) {
+        titleX.set(e.clientX + CURSOR_OFFSET.x);
+        titleY.set(e.clientY + CURSOR_OFFSET.y);
+      }
       // New hover: capture the entry point and snap to no offset (matches the
       // shadow resetting on mouseenter).
       if (el !== originElRef.current) {
@@ -73,7 +73,11 @@ export default function ProjectsLayout() {
     };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
-  }, [setFromCursor, reset]);
+  }, [setFromCursor, reset, titleX, titleY]);
+
+  // On click the cursor-follow above gates off (see !$activeProject.get()), so
+  // titleX/titleY simply freeze at the last cursor position — the title holds
+  // right where the pointer was and persists through the list→detail transition.
 
   // Ease the drift back to center whenever nothing is hovered (mouse left the
   // list, or we're on the detail page where no list item is hovered).
@@ -93,63 +97,30 @@ export default function ProjectsLayout() {
     ? { slug: onScreenProject.slug, cover: onScreenProject.cover }
     : null;
 
-  // Scrolling of Gallery on /projects/$slug. On leaving detail we do NOT clear
-  // the wrapper transform here — the cover must hold its scrolled position while
-  // it fades out; the reset happens in Screen's onExitComplete instead.
-  useEffect(() => {
-    if (!isDetailPage) return;
-    return $scrollY.listen((y) => {
-      if (!galleryWrapperRef.current) return;
-      // Write transform synchronously (same frame as Lenis's scroll emit) for
-      // linear 1:1 tracking — a motion value flushes a frame later and reads as
-      // springy. Plain <div> (not motion.div) so Motion/React never manage
-      // `transform`, so this imperative write isn't clobbered on re-render.
-      galleryWrapperRef.current.style.transform = `translateY(${-y}px)`;
-    });
-  }, [isDetailPage]);
-
   return (
     <>
-      <div
-        ref={galleryWrapperRef}
-        className="fixed inset-0 overflow-hidden project-image h-dvh"
-      >
-        <motion.div className="w-full h-full">
-          <Screen
-            item={displayItem}
-            isDetailPage={isDetailPage}
-            offsetX={driftX}
-            offsetY={driftY}
-            onExitComplete={() => {
-              if (galleryWrapperRef.current)
-                galleryWrapperRef.current.style.transform = "";
-            }}
-          />
-        </motion.div>
-      </div>
-      <AnimatedOutlet
-        className="relative z-20"
-        onExitComplete={() => lenis?.scrollTo(0, { immediate: true })}
-      />
-      {/* Clicked list title held at its captured position: it stays put while the
-          list fades out and persists onto the detail page. (The back button and
-          subtitle now live on the $slug page, grouped with its description entrance.) */}
-      <AnimatePresence>
-        {activeProject && activePos && (
-          <motion.div
-            key="held-title"
-            initial={false}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            style={{ top: activePos.top, left: activePos.left }}
-            className="fixed z-30 font-medium text-[20px] text-accent whitespace-nowrap pointer-events-none"
-          >
-            <span className="block px-1 -ml-1 leading-[26px]">
-              {activeProject.title}
-            </span>
+      {onScreenProject && (
+        <motion.div
+          initial={{ filter: "blur(2px)" }}
+          animate={{
+            filter: isDetailPage ? "blur(0px)" : "blur(2px)",
+            transition: { duration: 0.8 },
+          }}
+          style={{
+            top: 0,
+            left: 0,
+            x: titleX,
+            y: titleY,
+            color: onScreenProject.accentColor.hex,
+          }}
+          className="font-medium text-lg mb-0 py-0 fixed z-1000"
+        >
+          <motion.div className="pointer-events-none top-full left-full">
+            <h1>{onScreenProject.title}</h1>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+      )}
+      <Outlet />
     </>
   );
 }

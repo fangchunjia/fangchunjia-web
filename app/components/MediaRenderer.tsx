@@ -12,7 +12,7 @@ export default function MediaRenderer({
 }) {
   if (media?.mediaType === "image" && media.image?.asset?._ref) {
     return (
-      <div className="flex w-full h-full justify-end items-end">
+      <div className="flex w-full h-full">
         {/* Replaced element: max-w/max-h shrink the <img> to fit the box at its
             intrinsic ratio, so the element IS the fitted image. */}
         <img
@@ -31,7 +31,9 @@ export default function MediaRenderer({
         // aspect-ratio gives the box a definite height (width ÷ ratio) in BOTH a
         // fixed frame and an auto-height flow cell, so `container-type: size`
         // can't collapse it — and it lets the video fit itself via cq units.
-        style={ratio ? { aspectRatio: ratio, containerType: "size" } : undefined}
+        style={
+          ratio ? { aspectRatio: ratio, containerType: "size" } : undefined
+        }
       >
         <MuxPlayer
           playbackId={media.video.asset.playbackId}
@@ -46,9 +48,7 @@ export default function MediaRenderer({
             aspectRatio: ratio,
             // Fit to the box at the video's own ratio: width = min(box width,
             // box height × ratio); height follows from aspect-ratio. No letterbox.
-            width: ratio
-              ? `min(100cqw, calc(100cqh * ${ratio}))`
-              : "100%",
+            width: ratio ? `min(100cqw, calc(100cqh * ${ratio}))` : "100%",
             maxWidth: "100%",
             maxHeight: "100%",
             // Safety against sub-pixel ratio mismatch: contain + transparent so

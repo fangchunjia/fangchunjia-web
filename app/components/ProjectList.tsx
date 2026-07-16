@@ -51,7 +51,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
           <li key={p.slug.current} className="">
             <Link
               to={`/projects/${p.slug.current}`}
-              className="cursor-pointer h-full col-span-10 grid grid-cols-subgrid relative group"
+              className="cursor-pointer h-full col-span-10 grid grid-cols-subgrid relative group text-accent"
               onClick={() => handleProjectClick(p)}
             >
               <div
@@ -71,19 +71,6 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                   applyAccentColor(committed.current);
                 }}
               >
-                <AnimatePresence>
-                  {hoveredProject?._id === p._id && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="px-[4px] h-6 absolute right-full flex"
-                    >
-                      <div className="m-auto text-[14px]">★</div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
                 <div
                   ref={(el) => {
                     if (el) projectListItemRefs.current.set(p.title, el);
@@ -124,8 +111,8 @@ function ProjectListTitle({ title }: { title: string }) {
 
   return (
     <motion.span
-      style={{ textShadow }}
-      className="block px-1 -ml-1 text-[20px] leading-[26px]"
+      // style={{ textShadow }}
+      className="block px-1 -ml-1 text-[18px] leading-[24px]"
       onMouseEnter={(e) => {
         origin.current = { x: e.clientX, y: e.clientY };
         reset();
