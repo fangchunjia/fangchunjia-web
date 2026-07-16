@@ -63,7 +63,7 @@
   --media-spacing: 40px;
   --section-top-spacing: 112px;
   --spacing-space-left: 208px;
-  --spacing-space-top: 80px;
+  --spacing-space-top: 56px;
   --cursor-default: url("/cursors/cursor-02.png"), default;
   --cursor-pointer: url("/cursors/cursor-01.png"), pointer;
   --text-shadow-embossed: -1px -1px 0px #d8d8d866, 1px 1px 0px #949494ab;
@@ -115,31 +115,6 @@ h1 {
 
 h2 {
   @apply font-semibold leading-[20px];
-}
-
-/* Page transitions are Motion-owned (AnimatedOutlet); no browser View Transitions. */
-
-.x {
-  background: #e8e9ed;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  opacity: 1;
-  position: relative;
-  font-size: 12.5rem;
-  text-shadow: calc(-2px * 1) calc(-2px * 1) calc(4px * 1) #fffdfc;
-}
-
-.y {
-  background: #111;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  opacity: 1;
-  position: relative;
-  text-shadow: -0.01em -0.01em 0.01em #000;
 }
 
 .embossed-wrapper {

@@ -7,10 +7,13 @@ import groq from "groq";
 import MediaGrid from "~/components/MediaGrid";
 import { PortableText } from "@portabletext/react";
 import { $activePos, $activeProject, $coverPlayed } from "~/stores/ui";
-import { motion, type Variants } from "motion/react";
+import { type Variants } from "motion/react";
+import ReactLenis from "lenis/react";
 import { useStore } from "@nanostores/react";
 import type { Project } from "~/types/sanity.types";
 import applyAccentColor from "~/utils/applyAccentColor";
+import BackOverlay from "~/components/BackOverlay";
+import MediaRenderer from "~/components/MediaRenderer";
 
 // Shared entrance for the detail overlay UI (back, subtitle, description, scroll
 // hint) so they all fade in together.
@@ -99,7 +102,6 @@ export default function ProjectDetail() {
   const activeProject = useStore($activeProject);
   const activePos = useStore($activePos);
   const coverPlayed = useStore($coverPlayed);
-  const overlayState = coverPlayed ? "visible" : "hidden";
 
   useEffect(() => {
     if (!activeProject) {
@@ -122,76 +124,46 @@ export default function ProjectDetail() {
   }, []);
 
   return (
-    <article>
-      {/* Back button + subtitle — pinned to the borders at the held title's vertical
-          position, fading in together with the description via overlayVariants. */}
-      {/* {activePos && (
-        <motion.div
-          variants={overlayVariants}
-          initial="hidden"
-          animate={overlayState}
-          style={{ top: activePos.top }}
-          className="fixed left-4 z-30 font-medium text-sm text-accent leading-[24px]"
-        >
-          <Link to="/projects">(back)</Link>
-        </motion.div>
-      )} */}
-      {/* {activePos && (
-        <motion.div
-          variants={overlayVariants}
-          initial="hidden"
-          animate={overlayState}
-          style={{ top: activePos.top }}
-          className="fixed right-8 z-30 font-medium text-sm text-accent leading-[24px] whitespace-nowrap pointer-events-none"
-        >
-          {project.subtitle}
-        </motion.div>
-      )} */}
-      {/* Spacer — holds document flow and description overlay; Gallery cover shows through */}
-      <motion.div
-        className="w-full relative"
-        initial={{ height: "100dvh" }}
-        // animate={
-        //   coverPlayed
-        //     ? { height: "calc(100dvh - 32px)" }
-        //     : { height: "100dvh" }
-        // }
-        transition={{ duration: 0.8, delay: 0.4, ease: [0.72, 0, 0.24, 1] }}
+    <>
+      <BackOverlay />
+      <ReactLenis
+        className="fixed inset-0 left-[300px] top-space-top bg-white/80 z-999 h-100dvh overflow-y-auto overscroll-contain"
+        options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
       >
-        <section className="grid grid-cols-12 absolute inset-0 p-4 gap-4">
-          <div className=" col-start-5 col-span-4 flex flex-col justify-end gap-4 text-accent">
-            <motion.div
-              className="flex flex-col gap-2 p-2"
-              variants={overlayVariants}
-              initial="hidden"
-              animate={overlayState}
-            >
-              <motion.div
-                drag
-                dragMomentum={false}
-                className="flex flex-col gap-2"
-              >
-                <div className="text-sm font-medium">
-                  {project.description && (
-                    <div className="leading-[16px]">
-                      <PortableText value={project.description} />
+        <article>
+          <div className="w-full relative">
+            <section className="[height:80dvh] flex">
+              <div className="max-w-2/3 [height:80%] m-auto">
+                <MediaRenderer media={project.cover.media} />
+              </div>
+            </section>
+            <section className="grid grid-cols-12 p-4 gap-4">
+              <div className=" col-start-5 col-span-4 flex flex-col justify-end gap-4 text-accent">
+                <div className="flex flex-col gap-2 p-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="text-sm font-medium">
+                      {project.description && (
+                        <div className="leading-[16px]">
+                          <PortableText value={project.description} />
+                        </div>
+                      )}
                     </div>
+                  </div>
+                  {project.grid?.length && (
+                    <div className="text-xs font-medium">(scroll down)</div>
                   )}
                 </div>
-              </motion.div>
-              {project.grid?.length && (
-                <div className="text-xs font-medium">(scroll down)</div>
-              )}
-            </motion.div>
+              </div>
+            </section>
           </div>
-        </section>
-      </motion.div>
-      {/* Images section — follows cover in natural flow */}
-      {project.grid?.length && (
-        <section className="py-8 pl-space-left bg-fangchunjia-gray">
-          <MediaGrid grid={project.grid} />
-        </section>
-      )}
-    </article>
+          {/* Images section — follows cover in natural flow */}
+          {project.grid?.length && (
+            <section className="py-8">
+              <MediaGrid grid={project.grid} />
+            </section>
+          )}
+        </article>
+      </ReactLenis>
+    </>
   );
 }

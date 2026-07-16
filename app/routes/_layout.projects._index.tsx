@@ -14,6 +14,8 @@ import type {
   MuxVideoAssetReference,
   Project,
 } from "~/types/sanity.types";
+import Screen from "~/components/Screen";
+import { useStore } from "@nanostores/react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -125,8 +127,20 @@ export default function Projects() {
     }
   });
 
+  const hoveredProject = useStore($hoveredProject);
+  const activeProject = useStore($activeProject);
+
+  const onScreenProject = activeProject || hoveredProject || null;
+
+  const displayItem = onScreenProject
+    ? { slug: onScreenProject.slug, cover: onScreenProject.cover }
+    : null;
+
   return (
     <div className="project-list relative">
+      <div className="fixed inset-0">
+        <Screen item={displayItem} />
+      </div>
       <article>
         <div className="pl-space-left pr-8 pt-space-top">
           <section className="">
