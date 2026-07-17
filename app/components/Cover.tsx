@@ -98,6 +98,11 @@ export default function Cover() {
   // fallback fade): unmounts Cover entirely, so the black Flirt + gray backdrop
   // vanish at once, handing off to the real page underneath.
   const [complete, setComplete] = useState(false);
+  // Movement-driven hover for the "to start" graphic: CSS `:hover` would fire
+  // the instant the button fades in under an already-stationary cursor, so the
+  // default green would never show. Gate the white state on a real mouse *move*
+  // instead, and reset on leave.
+  const [toStartHovered, setToStartHovered] = useState(false);
   const onExit = () => {
     setEnd(true);
   };
@@ -187,11 +192,17 @@ export default function Cover() {
           ref={toStart}
         >
           <button
-            className="m-auto flex cursor-pointer p-24 group"
+            className="m-auto flex cursor-pointer p-24"
             onClick={onExit}
+            onMouseMove={() => setToStartHovered(true)}
+            onMouseLeave={() => setToStartHovered(false)}
             aria-label="Enter site"
           >
-            <div className="w-60 m-auto *:fill-fangchunjia-green group-hover:*:fill-white">
+            <div
+              className={`w-60 m-auto ${
+                toStartHovered ? "*:fill-white" : "*:fill-fangchunjia-green"
+              }`}
+            >
               <ToStartGraphic />
             </div>
           </button>
