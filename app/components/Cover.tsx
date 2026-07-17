@@ -41,10 +41,15 @@ function alignMaskToFlirt(el: HTMLDivElement): boolean {
   return true;
 }
 
-// Duration (seconds) knobs for the exit sequence, kept in one place so they're
-// easy to tune and the surrounding comments can describe intent, not numbers.
+// Duration/delay (seconds) knobs, kept in one place so they're easy to tune and
+// the surrounding comments can describe intent, not numbers.
+const ENTRANCE = {
+  delay: 4, // wait after mount before the "to start" graphic appears
+  fadeIn: 0, // "to start" graphic fading in
+} as const;
+
 const EXIT = {
-  toStartFade: 0.3, // "to start" graphic fading out
+  toStartFadeOut: 0.4, // "to start" graphic fading out
   hold: 1, // Flirt-shaped video lingering before it dissolves
   videoFade: 1, // video dissolving to expose the black Flirt beneath
   fallbackFade: 0.8, // plain full-video fade when there's no Flirt to clip to
@@ -105,9 +110,15 @@ export default function Cover() {
         setComplete(true);
         return;
       }
-      entranceTl.current = gsap
-        .timeline()
-        .to(toStart.current, { opacity: 1, pointerEvents: "auto" }, "+=4");
+      entranceTl.current = gsap.timeline().to(
+        toStart.current,
+        {
+          opacity: 1,
+          pointerEvents: "auto",
+          duration: ENTRANCE.fadeIn,
+        },
+        `+=${ENTRANCE.delay}`,
+      );
     },
     { scope: container },
   );
@@ -127,7 +138,7 @@ export default function Cover() {
     if (!aligned) {
       gsap
         .timeline()
-        .to(toStart.current, { opacity: 0, duration: EXIT.toStartFade })
+        .to(toStart.current, { opacity: 0, duration: EXIT.toStartFadeOut })
         .to(
           video.current,
           {
@@ -142,7 +153,7 @@ export default function Cover() {
 
     gsap
       .timeline()
-      .to(toStart.current, { opacity: 0, duration: EXIT.toStartFade })
+      .to(toStart.current, { opacity: 0, duration: EXIT.toStartFadeOut })
       // Instantly clip the video to the Flirt shape (`--o: 0`), leaving the
       // Flirt-shaped video over the gray backdrop.
       .set(video.current, { "--o": 0 }, "<")
