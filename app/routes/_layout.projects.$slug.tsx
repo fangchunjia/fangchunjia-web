@@ -1,4 +1,4 @@
-import { useLoaderData, data, Link } from "react-router";
+import { useLoaderData, data } from "react-router";
 import { useEffect } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
@@ -6,21 +6,13 @@ import { enrichCover } from "~/lib/mux";
 import groq from "groq";
 import MediaGrid from "~/components/MediaGrid";
 import { PortableText } from "@portabletext/react";
-import { $activePos, $activeProject, $coverPlayed } from "~/stores/ui";
-import { type Variants } from "motion/react";
+import { $activeProject } from "~/stores/ui";
 import ReactLenis from "lenis/react";
 import { useStore } from "@nanostores/react";
 import type { Project } from "~/types/sanity.types";
 import applyAccentColor from "~/utils/applyAccentColor";
 import BackOverlay from "~/components/BackOverlay";
 import MediaRenderer from "~/components/MediaRenderer";
-
-// Shared entrance for the detail overlay UI (back, subtitle, description, scroll
-// hint) so they all fade in together.
-const overlayVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { delay: 1, duration: 0.4 } },
-};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -100,8 +92,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function ProjectDetail() {
   const { project } = useLoaderData<typeof loader>();
   const activeProject = useStore($activeProject);
-  const activePos = useStore($activePos);
-  const coverPlayed = useStore($coverPlayed);
 
   useEffect(() => {
     if (!activeProject) {

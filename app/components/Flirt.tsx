@@ -1,12 +1,19 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useLenis } from "lenis/react";
 import { useStore } from "@nanostores/react";
 import FlirtGraphic from "~/assets/graphics/flirt.svg?react";
-import { $isFlirtActivated } from "~/stores/ui";
+import { $isFlirtActivated, $flirtEl } from "~/stores/ui";
 
 export default function Flirt() {
   const isActivated = useStore($isFlirtActivated);
   const ref = useRef<SVGSVGElement>(null);
+
+  // Publish the graphic node so Cover can measure its rect and mask its exiting
+  // video to the exact Flirt shape/position.
+  useEffect(() => {
+    $flirtEl.set(ref.current);
+    return () => $flirtEl.set(null);
+  }, []);
 
   // Drive the squeeze straight onto the node from Lenis's scroll callback (0→1
   // progress) to avoid a React re-render on every scroll frame.
