@@ -9,8 +9,8 @@ export default function Quote() {
       <svg width="0" height="0" aria-hidden className="absolute">
         <defs>
           <filter id="quote-inner-shadow">
-            <feOffset dx="-1" dy="-1" />
-            <feGaussianBlur stdDeviation="4" result="offsetBlur" />
+            <feOffset dx="-0.5" dy="-0.5" />
+            <feGaussianBlur stdDeviation="0.5" result="offsetBlur" />
             <feComposite
               operator="out"
               in="SourceGraphic"
@@ -19,7 +19,7 @@ export default function Quote() {
             />
             <feFlood
               style={{ floodColor: "var(--color-accent)" }}
-              floodOpacity={0.75}
+              floodOpacity={1}
               result="color"
             />
             <feComposite
@@ -28,7 +28,7 @@ export default function Quote() {
               in2="inverse"
               result="shadow"
             />
-            <feFlood floodColor="#fff" floodOpacity={0.1} result="fillColor" />
+            <feFlood floodColor="#fff" floodOpacity={0.2} result="fillColor" />
             <feComposite
               operator="in"
               in="fillColor"
