@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/_layout.projects._index";
 import { client, coverImageUrl } from "~/lib/sanity";
 import { enrichCover } from "~/lib/mux";
-import groq from "groq";
+import { projectsQuery } from "~/lib/queries";
 import ProjectList from "~/components/ProjectList";
 import { $activeProject, $hoveredProject } from "~/stores/ui";
 import { useEffect } from "react";
@@ -13,6 +13,7 @@ import type {
   MuxVideo,
   MuxVideoAssetReference,
   Project,
+  Slug,
 } from "~/types/sanity.types";
 import Screen from "~/components/Screen";
 import { useStore } from "@nanostores/react";
@@ -39,13 +40,20 @@ type MuxAssetDeref = {
 // CSS-ready `aspectRatio` so the player can reserve its box before load. The
 // asset is intersected with MuxAssetDeref (not replaced) so EnrichedMedia stays
 // mutually assignable with the generated `Media` type.
-export type EnrichedMedia = Omit<Media, "video"> & {
+export type EnrichedMedia = Omit<Media, "video" | "image"> & {
+  // Image intrinsic `aspectRatio` (number) is projected in the loader from the
+  // Sanity asset metadata: `asset->metadata.dimensions.aspectRatio`.
+  image?: NonNullable<Media["image"]> & { aspectRatio?: number };
   video?: Omit<MuxVideo, "asset"> & {
     asset?: MuxVideoAssetReference & MuxAssetDeref;
   };
   placeholder?: string;
   aspectRatio?: string;
 };
+
+// The GROQ query dereferences `category->{ _id, title, slug }`, but typegen models
+// it as a plain reference — reflect the dereferenced runtime shape here.
+export type CategoryDeref = { _id: string; title: string; slug: Slug };
 
 export type ProjectInfo = Omit<
   Pick<
@@ -58,48 +66,17 @@ export type ProjectInfo = Omit<
     | "year"
     | "cover"
     | "accentColor"
-    | "lightDark"
   >,
-  "cover"
+  "cover" | "category"
 > & {
-  cover: Omit<Project["cover"], "media"> & { media?: EnrichedMedia };
+  category: CategoryDeref;
+  cover: Omit<Project["cover"], "media" | "fullscreen"> & {
+    media?: EnrichedMedia;
+  };
 };
 
 export async function loader({}: Route.LoaderArgs) {
-  const raw = await client.fetch<any[]>(groq`
-    *[_type == "project"] | order(category->orderRank asc, orderRank asc) {
-      _id,
-      title,
-      subtitle,
-      year,
-      slug,
-      category->{
-        _id,
-        title,
-        slug
-      },
-      cover {
-        fullscreen,
-        media {
-          mediaType,
-          video {
-            asset->{
-              playbackId,
-              assetId,
-              status,
-              "aspectRatio": data.aspect_ratio,
-              "duration": data.duration
-            }
-          },
-          image,
-          alt
-        }
-      },
-      accentColor,
-      lightDark,
-      labels[]-> { _id, title, slug }
-    }
-  `);
+  const raw = await client.fetch<ProjectInfo[]>(projectsQuery);
   const projects: ProjectInfo[] = await Promise.all(
     raw.map(async (p) => ({ ...p, cover: await enrichCover(p.cover) })),
   );
@@ -146,9 +123,6 @@ export default function Projects() {
           <section className="">
             <div className="">
               <ProjectList projects={projects} />
-              {/* <ProjectList projects={projects} />
-              <ProjectList projects={projects} />
-              <ProjectList projects={projects} /> */}
             </div>
           </section>
         </div>

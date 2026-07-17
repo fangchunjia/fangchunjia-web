@@ -3,16 +3,35 @@ import { useEffect } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
 import { client } from "~/lib/sanity";
 import { enrichCover } from "~/lib/mux";
-import groq from "groq";
+import { projectDetailQuery } from "~/lib/queries";
 import MediaGrid from "~/components/MediaGrid";
 import { PortableText } from "@portabletext/react";
 import { $activeProject } from "~/stores/ui";
 import ReactLenis from "lenis/react";
 import { useStore } from "@nanostores/react";
-import type { Project } from "~/types/sanity.types";
+import type { MediaGridBlock, Project } from "~/types/sanity.types";
+import type {
+  EnrichedMedia,
+  ProjectInfo,
+} from "~/routes/_layout.projects._index";
 import applyAccentColor from "~/utils/applyAccentColor";
 import BackOverlay from "~/components/BackOverlay";
 import MediaRenderer from "~/components/MediaRenderer";
+import { getMediaAspectRatio } from "~/utils/getMediaAspectRatio";
+
+// A media grid cell as returned by the loader: the generated MediaGridBlock plus
+// its array `_key`, with `media` in the deref'd/enriched shape.
+type GridMediaBlock = { _key: string } & Omit<MediaGridBlock, "media"> & {
+    media?: EnrichedMedia;
+  };
+
+// Runtime shape of the slug loader's project: ProjectInfo (deref'd category +
+// enriched cover) plus the detail-only fields this route fetches.
+type ProjectDetail = ProjectInfo & {
+  externalLink?: string;
+  description?: Project["description"];
+  grid?: GridMediaBlock[];
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,65 +41,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const project = await client.fetch<Project>(
-    groq`
-    *[_type == "project" && slug.current == $slug][0] {
-      _id,
-      title,
-      subtitle,
-      year,
-      slug,
-      externalLink,
-      cover {
-        fullscreen,
-        media {
-          mediaType,
-          video {
-            asset->{
-              playbackId,
-              assetId,
-              status,
-              "aspectRatio": data.aspect_ratio,
-              "duration": data.duration
-            }
-          },
-          image,
-          alt
-        }
-      },
-      accentColor,
-      description,
-      labels[]-> { _id, title, slug },
-      grid[] {
-        _type,
-        _key,
-        gridColumnStart,
-        gridColumnSpan,
-        gridRowStart,
-        _type == "mediaGridBlock" => {
-          media {
-            mediaType,
-            image,
-            alt,
-            video {
-              asset->{
-                playbackId,
-                assetId,
-                status,
-                "aspectRatio": data.aspect_ratio,
-                "duration": data.duration
-              }
-            }
-          }
-        },
-        _type == "richTextGridBlock" => {
-          body
-        }
-      }
-    }
-  `,
-    { slug: params.slug },
-  );
+  const project = await client.fetch<ProjectDetail>(projectDetailQuery, {
+    slug: params.slug,
+  });
 
   if (!project) {
     throw data("Project not found", { status: 404 });
@@ -102,9 +65,8 @@ export default function ProjectDetail() {
         subtitle: project.subtitle,
         slug: project.slug,
         year: project.year,
-        cover: project.cover as any,
+        cover: project.cover,
         accentColor: project.accentColor,
-        lightDark: project.lightDark,
       });
     }
     applyAccentColor(project.accentColor.hex as string);
@@ -122,9 +84,18 @@ export default function ProjectDetail() {
       >
         <article>
           <div className="w-full relative">
-            <section className="[height:80dvh] flex">
-              <div className="max-w-2/3 [height:80%] m-auto">
-                <MediaRenderer media={project.cover.media} />
+            <section className="[height:80dvh] flex items-center justify-center">
+              {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio
+                  derives height, and max-height re-shrinks width when it binds. */}
+              <div
+                style={{
+                  aspectRatio: getMediaAspectRatio(project.cover.media),
+                  maxWidth: "66%",
+                  maxHeight: "80%",
+                  width: "100%",
+                }}
+              >
+                <MediaRenderer media={project.cover.media} fit="contain" />
               </div>
             </section>
             <section className="grid grid-cols-12 p-4 gap-4">

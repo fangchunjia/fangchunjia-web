@@ -1,6 +1,6 @@
 import { PortableText } from "@portabletext/react";
 import { client } from "~/lib/sanity";
-import groq from "groq";
+import { aboutQuery } from "~/lib/queries";
 import { data, useLoaderData } from "react-router";
 import type { About } from "../types/sanity.types";
 import type { Route } from "./+types/_layout.about";
@@ -13,14 +13,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader() {
-  const about = await client.fetch<About>(
-    groq`
-    *[_type == "about"][0] {
-      _id,
-      body,
-      }
-  `,
-  );
+  const about = await client.fetch<About>(aboutQuery);
 
   if (!about) {
     throw data("About not found", { status: 404 });
