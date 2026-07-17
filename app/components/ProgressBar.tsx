@@ -1,23 +1,20 @@
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import useProgressBar from "~/hooks/useProgressBar";
 
 export default function ProgressBar() {
   const { progress, visible } = useProgressBar();
 
   return (
-    <div className="fixed z-9999 bottom-0 inset-x-0 h-1">
-      <AnimatePresence>
+    visible && (
+      <div className="fixed z-999 bottom-0 inset-0">
         {visible && (
           <motion.div
-            className="h-1 bg-accent pointer-events-none"
+            className="h-full bg-accent opacity-10 pointer-events-none"
             style={{ width: `${progress}%` }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, width: `${progress}%` }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            animate={{ width: `${progress}%` }}
           />
         )}
-      </AnimatePresence>
-    </div>
+      </div>
+    )
   );
 }
