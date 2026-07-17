@@ -41,11 +41,22 @@ function alignMaskToFlirt(el: HTMLDivElement): boolean {
   return true;
 }
 
+// Duration (seconds) knobs for the exit sequence, kept in one place so they're
+// easy to tune and the surrounding comments can describe intent, not numbers.
+const EXIT = {
+  toStartFade: 0.3, // "to start" graphic fading out
+  hold: 1, // Flirt-shaped video lingering before it dissolves
+  videoFade: 1, // video dissolving to expose the black Flirt beneath
+  fallbackFade: 0.8, // plain full-video fade when there's no Flirt to clip to
+} as const;
+
 function CoverVideo({
-  onEnded,
+  onExit,
   ref,
 }: {
-  onEnded: () => void;
+  // Fired when the intro is over — the video played through, or errored/failed
+  // to load so we should bail out rather than get stuck on a black screen.
+  onExit: () => void;
   ref?: React.Ref<HTMLVideoElement>;
 }) {
   return (
@@ -57,7 +68,8 @@ function CoverVideo({
       playsInline
       preload="auto"
       poster="https://image.mux.com/e3GC55qNEuxgtjryZKO9CghBejRZfnhsNSzfQwP4ZuA/thumbnail.webp?width=1920&time=0"
-      onEnded={onEnded}
+      onEnded={onExit}
+      onError={onExit}
     >
       <source
         src="https://stream.mux.com/e3GC55qNEuxgtjryZKO9CghBejRZfnhsNSzfQwP4ZuA/highest.mp4"
@@ -70,102 +82,86 @@ function CoverVideo({
 export default function Cover() {
   const container = useRef<HTMLDivElement | null>(null);
   const entranceTl = useRef<GSAPTimeline | null>(null);
-  const exitTl = useRef<GSAPTimeline | null>(null);
   const video = useRef<HTMLDivElement | null>(null);
   const videoEl = useRef<HTMLVideoElement | null>(null);
   const toStart = useRef<HTMLDivElement | null>(null);
+  // Exit has begun: set by `onExit` when the video plays through / errors, or
+  // the user clicks "to start". Kicks off the exit timeline (the `[end]` useGSAP
+  // below).
   const [end, setEnd] = useState(false);
-  const [show, setShow] = useState(true);
-  const [revealed, setRevealed] = useState(false);
+  // The whole exit has finished (end of the exit timeline, or the no-Flirt
+  // fallback fade): unmounts Cover entirely, so the black Flirt + gray backdrop
+  // vanish at once, handing off to the real page underneath.
   const [complete, setComplete] = useState(false);
-  const onEnded = () => {
+  const onExit = () => {
     setEnd(true);
   };
+
   useGSAP(
     () => {
+      // Respect reduced-motion: skip the whole video intro rather than autoplay
+      // a full-screen clip.
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setComplete(true);
+        return;
+      }
       entranceTl.current = gsap
         .timeline()
-        // .to(video.current, {
-        //   opacity: 1,
-        //   duration: 1.2,
-        //   // delay: 0.4,
-        // })
-        .to(
-          toStart.current,
-          {
-            opacity: 1,
-            pointerEvents: "auto",
-          },
-          "+=4",
-        );
+        .to(toStart.current, { opacity: 1, pointerEvents: "auto" }, "+=4");
     },
     { scope: container },
   );
 
   useGSAP(() => {
-    if (end === true) {
-      // Align the shape mask to the real Flirt before animating. If there's no
-      // Flirt to measure, fall back to a plain full-video fade so Cover never
-      // gets stuck.
-      const aligned = video.current ? alignMaskToFlirt(video.current) : false;
+    if (!end) return;
 
-      if (!aligned) {
-        exitTl.current = gsap
-          .timeline()
-          .to(toStart.current, { opacity: 0, duration: 0.3 })
-          .to(
-            video.current,
-            {
-              opacity: 0,
-              duration: 0.8,
-              onComplete: () => {
-                if (end === true) {
-                  setComplete(true);
-                }
-              },
-            },
-            "<",
-          );
-        return;
-      }
+    // If exit fires before the entrance's fade-in has run (e.g. a short or
+    // errored video), stop it so it can't fade "to start" back in mid-exit.
+    entranceTl.current?.kill();
 
-      exitTl.current = gsap
+    // Align the shape mask to the real Flirt before animating (measured once,
+    // at exit — not updated on resize). If there's no Flirt to measure, fall
+    // back to a plain full-video fade so Cover never gets stuck.
+    const aligned = video.current ? alignMaskToFlirt(video.current) : false;
+
+    if (!aligned) {
+      gsap
         .timeline()
-        .to(toStart.current, { opacity: 0, duration: 0.3 })
-        // Phase 1: fade the video away everywhere except the Flirt shape (~0.8s),
-        // then reveal the pages underneath and let them take pointer events.
+        .to(toStart.current, { opacity: 0, duration: EXIT.toStartFade })
         .to(
           video.current,
           {
-            "--o": 0,
-            duration: 0,
-            onComplete: () => setRevealed(true),
+            opacity: 0,
+            duration: EXIT.fallbackFade,
+            onComplete: () => setComplete(true),
           },
           "<",
-        )
-        // Phase 2+3: hold the Flirt-shaped video for 2s, then fade the *video*
-        // out (not the shape), revealing the black Flirt beneath it. The black
-        // Flirt + gray backdrop then vanish together when Cover unmounts,
-        // handing off seamlessly to the real (identically-placed) black Flirt.
-        .to(videoEl.current, {
-          opacity: 0,
-          duration: 1,
-          delay: 1,
-          onComplete: () => {
-            if (end === true) {
-              setComplete(true);
-            }
-          },
-        });
+        );
+      return;
     }
+
+    gsap
+      .timeline()
+      .to(toStart.current, { opacity: 0, duration: EXIT.toStartFade })
+      // Instantly clip the video to the Flirt shape (`--o: 0`), leaving the
+      // Flirt-shaped video over the gray backdrop.
+      .set(video.current, { "--o": 0 }, "<")
+      // Hold that Flirt-shaped video, then dissolve the *video* (not the shape)
+      // to expose the black Flirt beneath it. The black Flirt + gray backdrop
+      // then vanish together when Cover unmounts, handing off seamlessly to the
+      // real (identically-placed) black Flirt.
+      .to(videoEl.current, {
+        opacity: 0,
+        duration: EXIT.videoFade,
+        delay: EXIT.hold,
+        onComplete: () => setComplete(true),
+      });
   }, [end]);
 
   return (
     !complete && (
       <div
-        className={`fixed inset-0 flex z-9999 bg-fangchunjia-gray ${
-          revealed ? "pointer-events-none" : ""
-        }`}
+        className="fixed inset-0 flex z-9999 bg-fangchunjia-gray"
         ref={container}
       >
         <div
@@ -173,7 +169,7 @@ export default function Cover() {
           ref={video}
           style={flirtMaskStyle}
         >
-          <CoverVideo onEnded={onEnded} ref={videoEl} />
+          <CoverVideo onExit={onExit} ref={videoEl} />
         </div>
         <div
           className="absolute inset-0 flex opacity-0 pointer-events-none"
@@ -181,7 +177,8 @@ export default function Cover() {
         >
           <button
             className="m-auto flex cursor-pointer p-24 group"
-            onClick={onEnded}
+            onClick={onExit}
+            aria-label="Enter site"
           >
             <div className="w-60 m-auto *:fill-fangchunjia-green group-hover:*:fill-white">
               <ToStartGraphic />
