@@ -18,8 +18,8 @@ export default function Quote() {
               result="inverse"
             />
             <feFlood
-              style={{ floodColor: "var(--color-accent)" }}
-              floodOpacity={1}
+              style={{ floodColor: "var(--accent-shadow)" }}
+              floodOpacity={0.72}
               result="color"
             />
             <feComposite

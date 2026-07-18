@@ -45,6 +45,11 @@
 
 :root {
   --accent: #000;
+  /* Accent with a minimum lightness, for the flirt/quote inner-shadow rims:
+     dark accents get lifted so the rim never reads too dark, while lighter
+     accents pass through unchanged (hue/chroma preserved). Text/fill usages
+     keep the raw --accent. */
+  --accent-shadow: oklch(from var(--accent) max(l, 0.6) c h);
 }
 
 @theme {

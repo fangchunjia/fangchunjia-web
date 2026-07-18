@@ -49,6 +49,24 @@ const labelsProjection = groq`
 // Queries
 // ---------------------------------------------------------------------------
 
+// Home page
+export const homeQuery = groq`
+  *[_type == "home"][0] {
+    _id,
+    cover {
+      ${mediaProjection}
+    },
+    grid[_type == "mediaGridBlock"] {
+      _type,
+      _key,
+      gridColumnStart,
+      gridColumnSpan,
+      gridRowStart,
+      ${mediaProjection}
+    }
+  }
+`;
+
 // All projects for the index list, ordered by category then manual rank.
 // Result shape: `ProjectInfo[]` (after `enrichCover`).
 export const projectsQuery = groq`

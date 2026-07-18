@@ -118,7 +118,6 @@ export type Project = {
   >;
   externalLink?: string;
   cover: {
-    fullscreen?: boolean;
     media?: Media;
   };
   primaryColor?: Color;
@@ -161,34 +160,6 @@ export type Color = {
   rgb?: RgbaColor;
 };
 
-export type MuxVideoAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "mux.videoAsset";
-};
-
-export type MuxVideo = {
-  _type: "mux.video";
-  asset?: MuxVideoAssetReference;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-};
-
 export type Category = {
   _id: string;
   _type: "category";
@@ -213,6 +184,22 @@ export type Profile = {
     crop?: SanityImageCrop;
     _type: "image";
   };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
 };
 
 export type Settings = {
@@ -258,6 +245,34 @@ export type Cover = {
   _updatedAt: string;
   _rev: string;
   video?: MuxVideo;
+};
+
+export type MuxVideoAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "mux.videoAsset";
+};
+
+export type MuxVideo = {
+  _type: "mux.video";
+  asset?: MuxVideoAssetReference;
+};
+
+export type Home = {
+  _id: string;
+  _type: "home";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  cover: {
+    media?: Media;
+  };
+  grid?: Array<
+    {
+      _key: string;
+    } & MediaGridBlock
+  >;
 };
 
 export type MuxVideoAsset = {
@@ -483,15 +498,16 @@ export type AllSanitySchemaTypes =
   | LabelReference
   | Project
   | Color
-  | MuxVideoAssetReference
-  | MuxVideo
-  | SanityImageCrop
-  | SanityImageHotspot
   | Category
   | Profile
+  | SanityImageCrop
+  | SanityImageHotspot
   | Settings
   | About
   | Cover
+  | MuxVideoAssetReference
+  | MuxVideo
+  | Home
   | MuxVideoAsset
   | MuxAssetData
   | MuxStaticRenditions
