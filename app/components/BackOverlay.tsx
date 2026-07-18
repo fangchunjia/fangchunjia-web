@@ -8,7 +8,7 @@ export default function BackOverlay() {
   return (
     <>
       <Link
-        className="backdrop fixed inset-0 z-overlay bg-fangchunjia-gray"
+        className="fixed inset-0 z-overlay"
         to={"/projects"}
         onMouseMove={(e) => {
           setHovered(true);
