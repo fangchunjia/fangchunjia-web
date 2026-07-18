@@ -47,7 +47,9 @@ function coverOgImage(media?: EnrichedMedia): string | undefined {
 export function meta({ loaderData, matches, location }: Route.MetaArgs) {
   const project = loaderData?.project;
   return seoMeta({
-    title: project ? `Chunjia Fang (${project.title})` : "Chunjia Fang (Project)",
+    title: project
+      ? `Chunjia Fang (${project.title})`
+      : "Chunjia Fang (Project)",
     description: project?.subtitle || "A project by Chunjia Fang.",
     origin: rootOrigin(matches),
     path: location.pathname,
@@ -105,6 +107,7 @@ export default function ProjectDetail() {
           <h1 className="sr-only">{project.title}</h1>
           <div className="w-full relative">
             <section className="[height:80dvh] flex items-center justify-center">
+              <h2 className="sr-only">Cover</h2>
               {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio
                   derives height, and max-height re-shrinks width when it binds. */}
               <div
@@ -119,6 +122,7 @@ export default function ProjectDetail() {
               </div>
             </section>
             <section className="grid grid-cols-12 p-4 gap-4">
+              <h2 className="sr-only">Description</h2>
               <div className=" col-start-5 col-span-4 flex flex-col justify-end gap-4 text-accent">
                 <div className="flex flex-col gap-2 p-2">
                   <div className="flex flex-col gap-2">
@@ -140,6 +144,7 @@ export default function ProjectDetail() {
           {/* Images section — follows cover in natural flow */}
           {project.grid?.length && (
             <section className="py-8">
+              <h2 className="sr-only">Gallery</h2>
               <MediaGrid grid={project.grid} />
             </section>
           )}
