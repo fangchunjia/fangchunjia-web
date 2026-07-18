@@ -1,7 +1,8 @@
 import { useLoaderData, data } from "react-router";
 import { useEffect } from "react";
 import type { Route } from "./+types/_layout.projects.$slug";
-import { client } from "~/lib/sanity";
+import { client, coverImageUrl } from "~/lib/sanity";
+import { rootOrigin, seoMeta } from "~/lib/seo";
 import { enrichCover } from "~/lib/mux";
 import { projectDetailQuery } from "~/lib/queries";
 import MediaGrid from "~/components/MediaGrid";
@@ -33,11 +34,26 @@ type ProjectDetail = ProjectInfo & {
   grid?: GridMediaBlock[];
 };
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Chunjia Fang (Project)" },
-    { name: "description", content: "Chunjia Fang's Site" },
-  ];
+// Absolute social-card image from the cover: Sanity CDN URL for images, Mux
+// thumbnail for videos. Both are already absolute, so no origin needed.
+function coverOgImage(media?: EnrichedMedia): string | undefined {
+  if (media?.mediaType === "image" && media.image?.asset?._ref)
+    return coverImageUrl(media.image.asset._ref);
+  if (media?.mediaType === "video" && media.video?.asset?.playbackId)
+    return `https://image.mux.com/${media.video.asset.playbackId}/thumbnail.jpg`;
+  return undefined;
+}
+
+export function meta({ loaderData, matches, location }: Route.MetaArgs) {
+  const project = loaderData?.project;
+  return seoMeta({
+    title: project ? `Chunjia Fang (${project.title})` : "Chunjia Fang (Project)",
+    description: project?.subtitle || "A project by Chunjia Fang.",
+    origin: rootOrigin(matches),
+    path: location.pathname,
+    image: coverOgImage(project?.cover.media),
+    type: "article",
+  });
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -83,6 +99,10 @@ export default function ProjectDetail() {
         options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
       >
         <article>
+          {/* Server-rendered document heading. Visually hidden — the project
+              title is shown via the floating overlay in the projects layout —
+              but present in SSR HTML for crawlers and assistive tech. */}
+          <h1 className="sr-only">{project.title}</h1>
           <div className="w-full relative">
             <section className="[height:80dvh] flex items-center justify-center">
               {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio

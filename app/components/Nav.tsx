@@ -58,9 +58,10 @@ function NavItem({ item, distance }: { item: NavItem; distance: number }) {
       <div>
         <NavLink
           to={item.to}
+          aria-label={item.title}
           className={`block w-fit *:w-full *:transition *:fill-accent *:overflow-visible h-fit ${item.parentClassName}`}
         >
-          <div className={`w-full ${item.graphicClassName}`}>
+          <div className={`w-full ${item.graphicClassName}`} aria-hidden="true">
             <Graphic />
           </div>
         </NavLink>
@@ -86,7 +87,7 @@ export default function Nav() {
   const parentPath = location.pathname.replace(/\/[^/]+\/?$/, "") || "/";
 
   return (
-    <div className="w-96 flex relative">
+    <nav aria-label="Primary" className="w-96 flex relative">
       {navItems.map((item, index) => (
         <NavItem
           key={item.to}
@@ -99,6 +100,6 @@ export default function Nav() {
           <Back />
         </div>
       )}
-    </div>
+    </nav>
   );
 }

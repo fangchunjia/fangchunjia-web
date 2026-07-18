@@ -17,12 +17,15 @@ import type {
 } from "~/types/sanity.types";
 import Screen from "~/components/Screen";
 import { useStore } from "@nanostores/react";
+import { rootOrigin, seoMeta } from "~/lib/seo";
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Chunjia Fang (Projects)" },
-    { name: "description", content: "Chunjia Fang's Site" },
-  ];
+export function meta({ matches, location }: Route.MetaArgs) {
+  return seoMeta({
+    title: "Chunjia Fang (Projects)",
+    description: "Selected projects and work by Chunjia Fang.",
+    origin: rootOrigin(matches),
+    path: location.pathname,
+  });
 }
 
 // The GROQ query dereferences `video.asset` (asset->{ playbackId, "aspectRatio":
@@ -119,6 +122,7 @@ export default function Projects() {
         <Screen item={displayItem} />
       </div>
       <article className="relative z-content">
+        <h1 className="sr-only">Projects</h1>
         <div className="pl-space-left pr-8 pt-space-top">
           <section className="">
             <div className="">

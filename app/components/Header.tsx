@@ -7,16 +7,18 @@ export default function Header({
   onClickBranding: Function;
 }) {
   return (
-    <div className="fixed z-chrome flex inset-x-0 h-14">
-      <div
+    <header className="fixed z-chrome flex inset-x-0 h-14">
+      <button
+        type="button"
+        aria-label="Toggle portrait photo"
         className="h-fit"
         onClick={() => {
           onClickBranding();
         }}
       >
         <Branding />
-      </div>
+      </button>
       <Nav />
-    </div>
+    </header>
   );
 }
