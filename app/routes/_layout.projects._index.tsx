@@ -114,11 +114,11 @@ export default function Projects() {
     : null;
 
   return (
-    <div className="project-list relative">
-      <div className="fixed inset-0">
+    <div className="project-list isolate">
+      <div className="fixed inset-0 z-screen">
         <Screen item={displayItem} />
       </div>
-      <article>
+      <article className="relative z-content">
         <div className="pl-space-left pr-8 pt-space-top">
           <section className="">
             <div className="">

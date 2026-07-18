@@ -6,7 +6,7 @@ export default function ProgressBar() {
 
   return (
     visible && (
-      <div className="fixed z-999 bottom-0 inset-0">
+      <div className="fixed z-chrome bottom-0 inset-0">
         {visible && (
           <motion.div
             className="h-full bg-accent opacity-10 pointer-events-none"

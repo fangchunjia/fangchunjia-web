@@ -1,6 +1,6 @@
 export default function Quote() {
   return (
-    <div className="fixed z-999 bottom-0 left-space-left pb-1">
+    <div className="fixed z-chrome bottom-0 left-space-left pb-1">
       {/* Inner-shadow filter: punch the shape out of a blurred, offset copy of
           itself, fill the resulting rim with --color-accent, then paint it back
           over a semi-transparent white fill of the source glyphs. Same technique

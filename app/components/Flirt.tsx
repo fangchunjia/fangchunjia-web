@@ -31,16 +31,13 @@ export default function Flirt() {
   });
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-99 flex *:m-auto *:max-h-[80%]">
+    <div className="fixed inset-0 pointer-events-none z-flirt flex *:m-auto *:max-h-[80%] *:fill-fangchunjia-gray">
       {/* Inner-shadow filter: punch the shape out of a blurred, offset copy of
           itself, fill the resulting rim with --color-accent, then paint it back
           over the graphic. CSS var must go through flood-color (a CSS property),
-          not a presentation attribute. */}
-      {/* Replace the graphic's own fill with white @ 20% alpha, clipped to
-                the shape, then paint the shadow rim over it. */}
-      {/* <FlirtGraphic /> */}
-      <div className="fixed inset-0 pointer-events-none z-9999 flex *:m-auto *:max-h-[80%] *:fill-fangchunjia-gray">
-        {isActivated && (
+          not a presentation attribute. Then replace the graphic's own fill with
+          white @ 20% alpha, clipped to the shape, and paint the rim over it. */}
+      {isActivated && (
           <svg width="0" height="0" aria-hidden className="absolute">
             <defs>
               <filter id="flirt-inner-shadow">
@@ -88,7 +85,6 @@ export default function Flirt() {
             fill: isActivated ? "" : "#000",
           }}
         />
-      </div>
     </div>
   );
 }
