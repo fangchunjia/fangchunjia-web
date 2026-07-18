@@ -79,7 +79,7 @@ export default function ProjectDetail() {
     <>
       <BackOverlay />
       <ReactLenis
-        className="fixed inset-0 left-[300px] top-space-top bg-white/80 z-999 h-100dvh overflow-y-auto overscroll-contain"
+        className="fixed inset-0 left-[300px] top-space-top bg-white/80 z-overlay-content h-100dvh overflow-y-auto overscroll-contain"
         options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
       >
         <article>

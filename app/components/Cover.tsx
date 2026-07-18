@@ -177,7 +177,7 @@ export default function Cover() {
   return (
     !complete && (
       <div
-        className="fixed inset-0 flex z-9999 bg-fangchunjia-gray"
+        className="fixed inset-0 flex z-cover bg-fangchunjia-gray"
         ref={container}
       >
         <div

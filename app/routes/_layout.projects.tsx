@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Outlet, useMatches } from "react-router";
 import { useStore } from "@nanostores/react";
-import { AnimatePresence, motion, useMotionValue } from "motion/react";
+import { motion, useMotionValue } from "motion/react";
 import { $activeProject, $hoveredEl, $hoveredProject } from "~/stores/ui";
 import useCursorDrift from "~/hooks/useCursorDrift";
 
@@ -29,14 +29,7 @@ export default function ProjectsLayout() {
 
   // Single sprung cursor-drift signal (px, capped to ±BLEED) for the <Screen>
   // image offset — same logic as the title shadow, just capped to the bleed.
-  const {
-    x: driftX,
-    y: driftY,
-    setFromCursor,
-    reset,
-  } = useCursorDrift({
-    cap: BLEED,
-  });
+  const { setFromCursor, reset } = useCursorDrift({ cap: BLEED });
   // Entry point of the current hover, so the drift can mirror the title shadow's
   // raw pixel offset from where the cursor entered the item.
   const originRef = useRef<{ x: number; y: number } | null>(null);
@@ -93,10 +86,6 @@ export default function ProjectsLayout() {
 
   const onScreenProject = activeProject || hoveredProject || null;
 
-  const displayItem = onScreenProject
-    ? { slug: onScreenProject.slug, cover: onScreenProject.cover }
-    : null;
-
   return (
     <>
       {onScreenProject && (
@@ -113,7 +102,7 @@ export default function ProjectsLayout() {
             y: titleY,
             color: onScreenProject.accentColor.hex,
           }}
-          className="font-medium text-lg mb-0 py-0 fixed z-1000"
+          className="font-medium text-lg mb-0 py-0 fixed z-chrome"
         >
           <motion.div className="pointer-events-none top-full left-full">
             <h1>{onScreenProject.title}</h1>

@@ -54,6 +54,15 @@
   --color-fangchunjia-green: #5eff00;
   --color-fangchunjia-gray: #e7e7e7;
   --color-fangchunjia-black: #000000;
+  /* Semantic stacking scale (bottom → top). Owns the whole site's z-order so
+     components reference a layer name, not a magic number. */
+  --z-index-screen: 0; /* list-page background media (<Screen>) */
+  --z-index-content: 10; /* page content: lists, articles */
+  --z-index-flirt: 20; /* decorative Flirt graphic (over content, under chrome) */
+  --z-index-overlay: 30; /* detail back-overlay backdrop */
+  --z-index-overlay-content: 40; /* detail scroll panel + Back label */
+  --z-index-chrome: 50; /* header, quote, purikura, progress, floating title */
+  --z-index-cover: 60; /* cover hides everything */
   --media-s-w-max: 160px;
   --media-s-h-max: 160px;
   --media-m-w-max: 160px;
