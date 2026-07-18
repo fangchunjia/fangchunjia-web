@@ -18,6 +18,12 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(useGSAP);
 }
 
+// Publish the request origin so child routes can build absolute canonical /
+// og:url values inside their `meta()` via `rootOrigin(matches)`.
+export function loader({ request }: Route.LoaderArgs) {
+  return { origin: new URL(request.url).origin };
+}
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
