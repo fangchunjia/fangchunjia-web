@@ -81,7 +81,7 @@ export default function Flirt() {
   });
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-flirt flex *:m-auto *:max-h-[80%] *:fill-fangchunjia-gray">
+    <div className="fixed inset-0 pointer-events-none z-flirt flex *:m-auto *:max-h-[80%] *:max-w-[80%] *:fill-fangchunjia-gray">
       {/* Inner-shadow filter: punch the shape out of a blurred, offset copy of
           itself, fill the resulting rim with --color-accent, then paint it back
           over the graphic. CSS var must go through flood-color (a CSS property),

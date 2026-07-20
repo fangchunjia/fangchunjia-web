@@ -18,9 +18,6 @@ export const $isFlirtActivated = computed(
   (active, hovered) => active !== null || hovered !== null,
 );
 
-// Owned by ProjectList (/projects), to keep track of the clicked position
-export const $activePos = atom<{ top: number; left: number } | null>(null);
-
 // Owned by Flirt: the live FlirtGraphic <svg> node. Read by Cover at exit to
 // measure its rect so the exiting video can be masked to the exact Flirt shape.
 export const $flirtEl = atom<SVGSVGElement | null>(null);

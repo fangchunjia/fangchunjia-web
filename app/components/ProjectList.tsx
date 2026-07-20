@@ -1,27 +1,15 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router";
-import {
-  $activePos,
-  $activeProject,
-  $hoveredEl,
-  $hoveredProject,
-} from "~/stores/ui";
+import { $activeProject, $hoveredEl, $hoveredProject } from "~/stores/ui";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
 import applyAccentColor from "~/utils/applyAccentColor";
 
 export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
-
-  const projectListItemRefs = useRef<Map<string, HTMLElement>>(new Map());
   const DEFAULT_ACCENT_COLOR = "#000";
 
   const handleProjectClick = (p: ProjectInfo) => {
     $activeProject.set(p);
-    const el = projectListItemRefs.current.get(p.slug.current);
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      $activePos.set({ top: rect.top, left: rect.left });
-    }
     committed.current = p.accentColor.hex || DEFAULT_ACCENT_COLOR;
     applyAccentColor(p.accentColor.hex || DEFAULT_ACCENT_COLOR);
   };
@@ -55,14 +43,7 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
                 applyAccentColor(committed.current);
               }}
             >
-              <div
-                ref={(el) => {
-                  const key = p.slug.current;
-                  if (el) projectListItemRefs.current.set(key, el);
-                  else projectListItemRefs.current.delete(key);
-                }}
-                className="font-medium"
-              >
+              <div className="font-medium">
                 <ProjectListTitle title={p.title} />
               </div>
             </div>
