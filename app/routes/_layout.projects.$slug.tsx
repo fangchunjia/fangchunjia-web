@@ -97,53 +97,58 @@ export default function ProjectDetail() {
     <>
       <BackOverlay />
       <ReactLenis
-        className="fixed inset-0 left-[300px] top-space-top bg-white/80 z-overlay-content h-100dvh overflow-y-auto overscroll-contain"
+        className="fixed inset-0 left-[300px] top-space-top bg-white/80 z-overlay-content h-100dvh overflow-y-auto overscroll-contain [container-type:size]"
         options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
       >
-        <article>
+        <article className="p-8">
           {/* Server-rendered document heading. Visually hidden — the project
               title is shown via the floating overlay in the projects layout —
               but present in SSR HTML for crawlers and assistive tech. */}
           <h1 className="sr-only">{project.title}</h1>
-          <div className="w-full relative">
-            <section className="[height:80dvh] flex items-center justify-center">
-              <h2 className="sr-only">Cover</h2>
-              {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio
+          <section className="">
+            <h2 className="sr-only">Cover</h2>
+            {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio
                   derives height, and max-height re-shrinks width when it binds. */}
-              <div
-                style={{
-                  aspectRatio: getMediaAspectRatio(project.cover.media),
-                  maxWidth: "66%",
-                  maxHeight: "80%",
-                  width: "100%",
-                }}
-              >
-                <MediaRenderer media={project.cover.media} fit="contain" />
-              </div>
-            </section>
-            <section className="grid grid-cols-12 p-4 gap-4">
-              <h2 className="sr-only">Description</h2>
-              <div className=" col-start-5 col-span-4 flex flex-col justify-end gap-4 text-accent">
-                <div className="flex flex-col gap-2 p-2">
-                  <div className="flex flex-col gap-2">
-                    <div className="text-sm font-medium">
-                      {project.description && (
-                        <div className="leading-[16px]">
-                          <PortableText value={project.description} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {project.grid?.length && (
-                    <div className="text-xs font-medium">(scroll down)</div>
-                  )}
+            <div
+              className="max-h-[50cqh] max-w-[50cqw]"
+              style={{
+                aspectRatio: getMediaAspectRatio(project.cover.media),
+              }}
+            >
+              <MediaRenderer media={project.cover.media} fit="contain" />
+            </div>
+          </section>
+          <section className="grid grid-cols-12 gap-4 mt-8">
+            <h2 className="sr-only">Info</h2>
+            {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio
+                  derives height, and max-height re-shrinks width when it binds. */}
+            <div className="col-start-1 col-span-12 font-medium text-accent leading-4">
+              <div className="text-sm leading-5">
+                <div>
+                  <span>{project.year}</span>
                 </div>
+                {project.externalLink && (
+                  <div>
+                    <span>{project.externalLink}</span>
+                  </div>
+                )}
+                {project.subtitle && (
+                  <div>
+                    <span>{project.subtitle}</span>
+                  </div>
+                )}
               </div>
-            </section>
-          </div>
+
+              {project.description && (
+                <div className="mt-4 text-md leading-5">
+                  <PortableText value={project.description} />
+                </div>
+              )}
+            </div>
+          </section>
           {/* Images section — follows cover in natural flow */}
           {project.grid?.length && (
-            <section className="py-8">
+            <section className="mt-8">
               <h2 className="sr-only">Gallery</h2>
               <MediaGrid grid={project.grid} />
             </section>
