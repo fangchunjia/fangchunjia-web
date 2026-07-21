@@ -97,7 +97,7 @@ export default function ProjectDetail() {
     <>
       <BackOverlay />
       <ReactLenis
-        className="fixed inset-0 left-[300px] top-space-top bg-white/80 z-overlay-content h-100dvh overflow-y-auto overscroll-contain [container-type:size]"
+        className="fixed w-[84vw] h-[calc(100dvh_-_var(--spacing-space-top))] right-0 bottom-0 bg-white/80 z-overlay-content overflow-y-auto overscroll-contain [container-type:size]"
         options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}
       >
         <article className="p-8">
@@ -105,12 +105,12 @@ export default function ProjectDetail() {
               title is shown via the floating overlay in the projects layout —
               but present in SSR HTML for crawlers and assistive tech. */}
           <h1 className="sr-only">{project.title}</h1>
-          <section className="">
+          <section className="flex">
             <h2 className="sr-only">Cover</h2>
             {/* Ratio-driven box bounded by both maxes: width fills, aspect-ratio
                   derives height, and max-height re-shrinks width when it binds. */}
             <div
-              className="max-h-[50cqh] max-w-[50cqw]"
+              className="max-h-[50cqh] max-w-[50cqw] m-auto"
               style={{
                 aspectRatio: getMediaAspectRatio(project.cover.media),
               }}
