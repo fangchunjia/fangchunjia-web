@@ -7,6 +7,8 @@ import { enrichCover } from "~/lib/mux";
 import { projectDetailQuery } from "~/lib/queries";
 import MediaGrid from "~/components/MediaGrid";
 import { PortableText } from "@portabletext/react";
+import { distortComponents } from "~/components/portableTextDistort";
+import DistortedText from "~/components/DistortedText";
 import { $activeProject } from "~/stores/ui";
 import ReactLenis from "lenis/react";
 import { useStore } from "@nanostores/react";
@@ -125,23 +127,35 @@ export default function ProjectDetail() {
             <div className="col-start-1 col-span-12 font-medium text-accent leading-4">
               <div className="text-sm leading-5">
                 <div>
-                  <span>{project.year}</span>
+                  <DistortedText as="span" preset="wavy">
+                    {project.year}
+                  </DistortedText>
                 </div>
                 {project.externalLink && (
                   <div>
-                    <span>{project.externalLink}</span>
+                    <DistortedText as="span" preset="wavy">
+                      {project.externalLink}
+                    </DistortedText>
                   </div>
                 )}
                 {project.subtitle && (
                   <div>
-                    <span>{project.subtitle}</span>
+                    <DistortedText as="span" preset="wavy">
+                      {project.subtitle}
+                    </DistortedText>
                   </div>
                 )}
               </div>
 
               {project.description && (
                 <div className="mt-4 text-md leading-5">
-                  <PortableText value={project.description} />
+                  <PortableText
+                    value={project.description}
+                    components={distortComponents({
+                      preset: "wavy",
+                      blocks: ["normal", "h1", "h2", "h3"],
+                    })}
+                  />
                 </div>
               )}
             </div>

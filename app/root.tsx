@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import Cover from "./components/Cover";
+import DistortionDefs from "./components/DistortionDefs";
 
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -58,6 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <>
+      <DistortionDefs />
       <Cover />
       <Outlet />
     </>
