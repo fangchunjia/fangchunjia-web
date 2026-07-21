@@ -1,5 +1,6 @@
 import { motion, type MotionValue } from "motion/react";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
+import DistortedText from "./DistortedText";
 
 export default function ProjectTitle({
   project,
@@ -43,7 +44,9 @@ export default function ProjectTitle({
       className="font-medium text-lg fixed z-chrome"
     >
       <div className="pointer-events-none leading-6">
-        <span>{project.title}</span>
+        <DistortedText as="span" preset="strong">
+          {project.title}
+        </DistortedText>
       </div>
     </motion.div>
   );

@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { $activeProject, $hoveredEl, $hoveredProject } from "~/stores/ui";
 import type { ProjectInfo } from "~/routes/_layout.projects._index";
 import applyAccentColor from "~/utils/applyAccentColor";
+import DistortedText from "./DistortedText";
 
 export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
   const committed = useRef<string | null>(null);
@@ -55,5 +56,13 @@ export default function ProjectList({ projects }: { projects: ProjectInfo[] }) {
 }
 
 function ProjectListTitle({ title }: { title: string }) {
-  return <span className="block text-lg leading-6">{title}</span>;
+  return (
+    <DistortedText
+      as="span"
+      preset="strong"
+      className="block text-lg leading-6"
+    >
+      {title}
+    </DistortedText>
+  );
 }

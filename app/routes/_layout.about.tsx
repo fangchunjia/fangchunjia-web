@@ -1,4 +1,5 @@
 import { PortableText } from "@portabletext/react";
+import { distortComponents } from "~/components/portableTextDistort";
 import { client } from "~/lib/sanity";
 import { aboutQuery } from "~/lib/queries";
 import { data, useLoaderData } from "react-router";
@@ -31,7 +32,13 @@ export default function About() {
       <h1 className="sr-only">About</h1>
       <article className="">
         <div className="[--tw-prose-body:#000000] prose prose-p:font-medium prose-p:leading-[20px] prose-p:m-0 prose-p:empty:h-[20px] prose-a:font-medium prose-a:no-underline prose-a:text-fangchunjia-pink">
-          <PortableText value={about.body} />
+          <PortableText
+            value={about.body}
+            components={distortComponents({
+              preset: "strong",
+              blocks: ["normal", "h1", "h2", "h3"],
+            })}
+          />
         </div>
       </article>
     </div>
