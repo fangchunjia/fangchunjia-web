@@ -32,10 +32,9 @@ export default function Home() {
     <div className="w-full">
       <h1 className="sr-only">Chunjia Fang</h1>
       <article className="">
-        <section className="h-dvh pl-space-left pt-space-top flex items-end justify-end [container-type:size]">
+        <section className="h-dvh pl-[20vw] pt-space-top flex items-end justify-end [container-type:size]">
           <h2 className="sr-only">Cover</h2>
           <div
-            className="max-w-full max-h-full"
             style={
               coverAr
                 ? {
